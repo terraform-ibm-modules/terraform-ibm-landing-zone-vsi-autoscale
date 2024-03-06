@@ -1,0 +1,56 @@
+locals {
+  load_balancer_map = {
+    for load_balancer in var.load_balancers :
+    (load_balancer.name) => load_balancer
+  }
+}
+
+
+resource "ibm_is_lb" "lb" {
+  for_each        = local.load_balancer_map
+  name            = "${var.prefix}-${each.value.name}-lb"
+  subnets         = var.subnets[*].id
+  type            = each.value.type #checkov:skip=CKV2_IBM_1:See https://github.com/bridgecrewio/checkov/issues/5824#
+  profile         = each.value.profile
+  security_groups = each.value.security_group == null ? null : [ibm_is_security_group.security_group[each.value.security_group.name].id]
+  resource_group  = var.resource_group_id
+  tags            = var.tags
+  access_tags     = var.access_tags
+}
+
+##############################################################################
+
+
+##############################################################################
+# Load Balancer Pool
+##############################################################################
+
+resource "ibm_is_lb_pool" "pool" {
+  for_each       = local.load_balancer_map
+  lb             = ibm_is_lb.lb[each.value.name].id
+  name           = "${var.prefix}-${each.value.name}-lb-pool"
+  algorithm      = each.value.algorithm
+  protocol       = each.value.protocol
+  health_delay   = each.value.health_delay
+  health_retries = each.value.health_retries
+  health_timeout = each.value.health_timeout
+  health_type    = each.value.health_type
+}
+
+##############################################################################
+
+##############################################################################
+# Load Balancer Listener
+##############################################################################
+
+resource "ibm_is_lb_listener" "listener" {
+  for_each                = local.load_balancer_map
+  lb                      = ibm_is_lb.lb[each.value.name].id
+  default_pool            = ibm_is_lb_pool.pool[each.value.name].id
+  port                    = each.value.listener_port
+  protocol                = each.value.listener_protocol
+  connection_limit        = each.value.connection_limit > 0 ? each.value.connection_limit : null
+  idle_connection_timeout = each.value.idle_connection_timeout
+}
+
+##############################################################################
