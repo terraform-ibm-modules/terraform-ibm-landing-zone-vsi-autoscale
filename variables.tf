@@ -254,6 +254,7 @@ variable "load_balancers" {
     object({
       name                    = string
       type                    = string
+      logging                 = optional(bool)
       listener_port           = number
       listener_protocol       = string
       connection_limit        = number

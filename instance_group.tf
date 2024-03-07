@@ -39,10 +39,10 @@ locals {
 
 }
 
-resource "time_sleep" "wait_120_seconds" {
+resource "time_sleep" "wait_180_seconds" {
   depends_on = [ibm_is_instance_group.instance_group]
 
-  destroy_duration = "120s"
+  destroy_duration = "180s"
 }
 
 resource "ibm_is_instance_group" "instance_group" {
@@ -78,7 +78,7 @@ resource "ibm_is_instance_group_manager" "instance_group_manager" {
   max_membership_count = each.value.max_membership_count
   min_membership_count = each.value.min_membership_count
 
-  depends_on = [time_sleep.wait_120_seconds]
+  depends_on = [time_sleep.wait_180_seconds]
 }
 
 ##############################################################################

@@ -16,6 +16,15 @@ resource "ibm_is_lb" "lb" {
   resource_group  = var.resource_group_id
   tags            = var.tags
   access_tags     = var.access_tags
+  logging         = each.value.logging
+  dynamic "dns" {
+    for_each = each.value.dns == null ? [] : [each.value.dns]
+
+    content {
+      instance_crn = dns.value.instance_crn
+      zone_id      = dns.value.zone_id
+    }
+  }
 }
 
 ##############################################################################
