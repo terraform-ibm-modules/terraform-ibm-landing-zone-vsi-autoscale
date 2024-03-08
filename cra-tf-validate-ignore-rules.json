@@ -7,6 +7,12 @@
             "is_valid": false
         },
         {
+            "scc_rule_id": "rule-8c923215-afdc-41b1-886c-64ce78741f8c",
+            "description": "Check whether Application Load Balancer for VPC has health check configured when created",
+            "ignore_reason": "Health check is configured on Application Load Balancer",
+            "is_valid": false
+        },
+        {
             "scc_rule_id": "rule-65b61a0f-ffdb-41ba-873d-ad329e7fc0ee",
             "description": "Check whether Application Load Balancer for VPC is configured to convert HTTP client requests to HTTPS",
             "ignore_reason": "This rule is not relevant since example is using a tcp listener",
