@@ -1,5 +1,5 @@
 <!-- Update the title -->
-# Terraform Modules Template Project
+# BM Secure Landing Zone VSI Autoscale Module
 
 <!--
 Update status and "latest release" badges:
@@ -13,7 +13,8 @@ Update status and "latest release" badges:
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 <!-- Add a description of module(s) in this repo -->
-TODO: Replace me with description of the module(s) in this repo
+This module creates an Auto Scale for VPC instance group which dynamically creates virtual server instances to meet the demands of your environment.  The virtual server instances (VSI) perscribed via an instance template can be connected to a load balancers.
+![vsi-module](https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi/main/.docs/vsi-autoscale.png)
 
 
 <!-- Below content is automatically populated via pre-commit hook -->
@@ -37,7 +38,14 @@ https://terraform-ibm-modules.github.io/documentation/#/implementation-guideline
 
 
 <!-- This heading should always match the name of the root level module (aka the repo name) -->
-## terraform-ibm-module-template
+## terraform-ibm-module-vsi-autoscale
+
+### Prerequisites
+
+- A Resource group
+- A VPC
+- A VPC SSH key
+- A VPC subnet
 
 ### Usage
 
@@ -49,7 +57,32 @@ unless real values don't help users know what to change.
 -->
 
 ```hcl
-
+module "vsi_autoscale" {
+  source                        = "terraform-ibm-modules/landing-zone-vsi-autoscale/ibm"
+  resource_group_id             = module.resource_group.resource_group_id
+  zone                          = var.zone
+  image_id                      = var.image_id
+  create_security_group         = var.create_security_group
+  security_group                = var.security_group
+  tags                          = var.resource_tags
+  access_tags                   = var.access_tags
+  subnets                       = module.slz_vpc.subnet_zone_list
+  vpc_id                        = module.slz_vpc.vpc_id
+  prefix                        = var.prefix
+  placement_group_id            = ibm_is_placement_group.placement_group.id
+  machine_type                  = var.machine_type
+  user_data                     = var.user_data
+  skip_iam_authorization_policy = var.skip_iam_authorization_policy
+  existing_kms_instance_guid    = var.existing_kms_instance_guid
+  kms_encryption_enabled        = var.kms_encryption_enabled
+  boot_volume_encryption_key    = var.boot_volume_encryption_key
+  ssh_key_ids                   = [local.ssh_key_id]
+  block_storage_volumes         = var.block_storage_volumes
+  instance_count                = var.instance_count
+  load_balancers                = var.load_balancers
+  application_port              = var.application_port
+  group_managers                = var.group_managers
+}
 ```
 
 ### Required IAM access policies
@@ -62,17 +95,15 @@ information in the console at
 Manage > Access (IAM) > Access groups > Access policies.
 -->
 
-<!--
+## Required IAM access policies
 You need the following permissions to run this module.
 
 - Account Management
-    - **Sample Account Service** service
+    - **Resource Group** service
+        - `Viewer` platform access
+- IAM Services
+    - **VPC Infrastructure Services** service
         - `Editor` platform access
-        - `Manager` service access
-    - IAM Services
-        - **Sample Cloud Service** service
-            - `Administrator` platform access
--->
 
 <!-- NO PERMISSIONS FOR MODULE
 If no permissions are required for the module, uncomment the following
