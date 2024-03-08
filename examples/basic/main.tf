@@ -71,7 +71,7 @@ resource "ibm_is_placement_group" "placement_group" {
 module "auto_scale" {
   source                        = "../../"
   resource_group_id             = module.resource_group.resource_group_id
-  zone                          = var.zone
+  zone                          = "${var.region}-1"
   image_id                      = var.image_id
   create_security_group         = var.create_security_group
   security_group                = var.security_group

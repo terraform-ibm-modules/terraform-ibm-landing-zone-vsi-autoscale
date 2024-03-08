@@ -16,12 +16,6 @@ variable "region" {
   default     = "us-east"
 }
 
-variable "zone" {
-  description = "The zone to create the resources"
-  type        = string
-  default     = "us-east-1"
-}
-
 variable "prefix" {
   description = "The prefix that you would like to append to your resources"
   type        = string
