@@ -12,12 +12,15 @@ import (
 const resourceGroup = "geretain-test-resources"
 const completeExampleDir = "examples/complete"
 
+const region = "us-east"
+
 func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
 		Testing:       t,
 		TerraformDir:  dir,
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
+		Region:        region,
 	})
 	return options
 }
