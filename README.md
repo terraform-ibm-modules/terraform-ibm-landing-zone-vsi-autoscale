@@ -119,7 +119,7 @@ statement instead the previous block.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0, <1.6.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0, <1.7.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.59.0, < 2.0.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.1, < 1.0.0 |
 
@@ -186,7 +186,7 @@ No modules.
 |------|-------------|
 | <a name="output_ibm_is_instance_group"></a> [ibm\_is\_instance\_group](#output\_ibm\_is\_instance\_group) | Instance group information |
 | <a name="output_intstance_template"></a> [intstance\_template](#output\_intstance\_template) | Instance template information |
-| <a name="output_lbs"></a> [lbs](#output\_lbs) | Load balancer information |
+| <a name="output_lbs_list"></a> [lbs\_list](#output\_lbs\_list) | Load balancer information |
 | <a name="output_security_groups"></a> [security\_groups](#output\_security\_groups) | Security group information |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

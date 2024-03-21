@@ -8,6 +8,8 @@
 
 locals {
   ssh_key_id = var.ssh_key != null ? data.ibm_is_ssh_key.existing_ssh_key[0].id : resource.ibm_is_ssh_key.ssh_key[0].id
+  image      = "ibm-centos-7-9-minimal-amd64-12"
+  vpc_name   = "complete-test"
 }
 
 ##############################################################################
@@ -54,7 +56,7 @@ module "slz_vpc" {
   region            = var.region
   prefix            = var.prefix
   tags              = var.resource_tags
-  name              = var.vpc_name
+  name              = local.vpc_name
 }
 
 #############################################################################
@@ -69,32 +71,83 @@ resource "ibm_is_placement_group" "placement_group" {
 }
 
 #############################################################################
-# Provision VSI
+# Provision Autoscale VSI
 #############################################################################
+data "ibm_is_image" "image" {
+  name = local.image
+}
 
 module "auto_scale" {
-  source                        = "../../"
-  resource_group_id             = module.resource_group.resource_group_id
-  zone                          = "${var.region}-1"
-  image_id                      = var.image_id
-  create_security_group         = var.create_security_group
-  security_group                = var.security_group
+  source                = "../../"
+  resource_group_id     = module.resource_group.resource_group_id
+  zone                  = "${var.region}-1"
+  image_id              = data.ibm_is_image.image.id
+  create_security_group = true
+  security_group = {
+    name : "vsi-sg",
+    rules : [
+      {
+        direction : "inbound",
+        name : "allow-vpc-inbound",
+        source : "10.0.0.0/8"
+      }
+    ]
+  }
   tags                          = var.resource_tags
   access_tags                   = var.access_tags
   subnets                       = module.slz_vpc.subnet_zone_list
   vpc_id                        = module.slz_vpc.vpc_id
   prefix                        = var.prefix
   placement_group_id            = ibm_is_placement_group.placement_group.id
-  machine_type                  = var.machine_type
-  user_data                     = var.user_data
-  skip_iam_authorization_policy = var.skip_iam_authorization_policy
-  existing_kms_instance_guid    = var.existing_kms_instance_guid
-  kms_encryption_enabled        = var.kms_encryption_enabled
-  boot_volume_encryption_key    = var.boot_volume_encryption_key
+  machine_type                  = "cx2-2x4"
+  user_data                     = null
+  skip_iam_authorization_policy = false
+  existing_kms_instance_guid    = null
+  kms_encryption_enabled        = false
+  boot_volume_encryption_key    = null
   ssh_key_ids                   = [local.ssh_key_id]
-  block_storage_volumes         = var.block_storage_volumes
-  instance_count                = var.instance_count
-  load_balancers                = var.load_balancers
-  application_port              = var.application_port
-  group_managers                = var.group_managers
+  block_storage_volumes         = []
+  instance_count                = 2
+  load_balancers = [{
+    name              = "srv-lb",
+    type              = "public",
+    listener_port     = 80,
+    listener_protocol = "tcp",
+    connection_limit  = 10,
+    protocol          = "tcp",
+    pool_member_port  = 80,
+    algorithm         = "round_robin",
+    health_delay      = 60,
+    health_retries    = 5,
+    health_timeout    = 30,
+    health_type       = "tcp",
+    security_group = {
+      name = "lb-sg",
+      rules = [
+        {
+          direction = "inbound",
+          name      = "allow-vpc-inbound",
+          source    = "10.0.0.0/8"
+        }
+      ]
+    }
+  }]
+  application_port = 80
+  group_managers = [
+    {
+      name                 = "test"
+      aggregation_window   = 120
+      cooldown             = 300
+      manager_type         = "autoscale"
+      enable_manager       = true
+      max_membership_count = 4
+      min_membership_count = 1
+      policies = [{
+        name         = "policy1"
+        metric_type  = "cpu"
+        metric_value = 70
+        policy_type  = "target"
+      }]
+    }
+  ]
 }

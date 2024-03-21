@@ -4,6 +4,8 @@
 
 locals {
   ssh_key_id = var.ssh_key != null ? data.ibm_is_ssh_key.existing_ssh_key[0].id : resource.ibm_is_ssh_key.ssh_key[0].id
+  vpc_name   = "basic-test"
+  image      = "ibm-centos-7-9-minimal-amd64-12"
 }
 
 ##############################################################################
@@ -50,7 +52,7 @@ module "slz_vpc" {
   region            = var.region
   prefix            = var.prefix
   tags              = var.resource_tags
-  name              = var.vpc_name
+  name              = local.vpc_name
 }
 
 #############################################################################
@@ -65,32 +67,51 @@ resource "ibm_is_placement_group" "placement_group" {
 }
 
 #############################################################################
-# Provision VSI
+# Provision Autoscale VSI
 #############################################################################
+data "ibm_is_image" "image" {
+  name = local.image
+}
 
 module "auto_scale" {
   source                        = "../../"
   resource_group_id             = module.resource_group.resource_group_id
   zone                          = "${var.region}-1"
-  image_id                      = var.image_id
-  create_security_group         = var.create_security_group
-  security_group                = var.security_group
+  image_id                      = data.ibm_is_image.image.id
+  create_security_group         = false
+  security_group                = null
   tags                          = var.resource_tags
   access_tags                   = var.access_tags
   subnets                       = module.slz_vpc.subnet_zone_list
   vpc_id                        = module.slz_vpc.vpc_id
   prefix                        = var.prefix
   placement_group_id            = ibm_is_placement_group.placement_group.id
-  machine_type                  = var.machine_type
-  user_data                     = var.user_data
-  skip_iam_authorization_policy = var.skip_iam_authorization_policy
-  existing_kms_instance_guid    = var.existing_kms_instance_guid
-  kms_encryption_enabled        = var.kms_encryption_enabled
-  boot_volume_encryption_key    = var.boot_volume_encryption_key
+  machine_type                  = "cx2-2x4"
+  user_data                     = null
+  skip_iam_authorization_policy = true
+  existing_kms_instance_guid    = null
+  kms_encryption_enabled        = false
+  boot_volume_encryption_key    = null
   ssh_key_ids                   = [local.ssh_key_id]
-  block_storage_volumes         = var.block_storage_volumes
-  instance_count                = var.instance_count
-  load_balancers                = var.load_balancers
-  application_port              = var.application_port
-  group_managers                = var.group_managers
+  block_storage_volumes         = []
+  instance_count                = 1
+  load_balancers                = []
+  application_port              = null
+  group_managers = [
+    {
+      name                 = "test"
+      aggregation_window   = 120
+      cooldown             = 300
+      manager_type         = "autoscale"
+      enable_manager       = true
+      max_membership_count = 4
+      min_membership_count = 1
+      policies = [{
+        name         = "policy-1"
+        metric_type  = "cpu"
+        metric_value = 70
+        policy_type  = "target"
+      }]
+    }
+  ]
 }
