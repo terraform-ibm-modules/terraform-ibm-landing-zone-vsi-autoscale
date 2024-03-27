@@ -149,7 +149,8 @@ variable "placement_group_id" {
 variable "security_group" {
   description = "Security group created for VSI"
   type = object({
-    name = string
+    name                         = string
+    add_ibm_cloud_internal_rules = optional(bool, false)
     rules = list(
       object({
         name      = string
@@ -260,6 +261,7 @@ variable "load_balancers" {
       connection_limit        = number
       idle_connection_timeout = optional(number)
       algorithm               = string
+      certificate_instance    = optional(string)
       protocol                = string
       health_delay            = number
       health_retries          = number
@@ -275,7 +277,8 @@ variable "load_balancers" {
       )
       security_group = optional(
         object({
-          name = string
+          name                         = string
+          add_ibm_cloud_internal_rules = optional(bool, false)
           rules = list(
             object({
               name      = string
@@ -303,6 +306,29 @@ variable "load_balancers" {
           )
         })
       )
+      policies = optional(
+        list(object({
+          name     = string
+          action   = string
+          priority = number
+          rules = optional(list(
+            object({
+              condition = string
+              type      = string
+              value     = string
+              field     = string
+            })
+          ))
+          target = optional(list(
+            object({
+              url              = optional(string)
+              http_status_code = optional(string)
+              pool_id          = optional(string)
+              listener_id      = optional(string)
+            })
+          ))
+          })
+      ))
     })
   )
 
@@ -353,6 +379,16 @@ variable "load_balancers" {
       flatten([
         for load_balancer in var.load_balancers :
         true if !contains(["http", "https", "tcp"], load_balancer.protocol)
+      ])
+    ) == 0
+  }
+
+  validation {
+    error_message = "If Load Balancer listener protocol is `https`, certificate_instance variable must be defined"
+    condition = length(
+      flatten([
+        for load_balancer in var.load_balancers :
+        true if("https" == load_balancer.listener_protocol && load_balancer.certificate_instance == null)
       ])
     ) == 0
   }

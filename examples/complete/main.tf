@@ -90,6 +90,11 @@ module "auto_scale" {
         direction : "inbound",
         name : "allow-vpc-inbound",
         source : "10.0.0.0/8"
+      },
+      {
+        direction = "outbound",
+        name      = "allow-vpc-outbound",
+        source    = "10.0.0.0/8"
       }
     ]
   }
@@ -112,9 +117,9 @@ module "auto_scale" {
     name              = "srv-lb",
     type              = "public",
     listener_port     = 80,
-    listener_protocol = "tcp",
+    listener_protocol = "http",
     connection_limit  = 10,
-    protocol          = "tcp",
+    protocol          = "http",
     pool_member_port  = 80,
     algorithm         = "round_robin",
     health_delay      = 60,
@@ -122,15 +127,36 @@ module "auto_scale" {
     health_timeout    = 30,
     health_type       = "tcp",
     security_group = {
-      name = "lb-sg",
+      name                         = "lb-sg",
+      add_ibm_cloud_internal_rules = false,
       rules = [
         {
           direction = "inbound",
           name      = "allow-vpc-inbound",
           source    = "10.0.0.0/8"
+        },
+        {
+          direction = "outbound",
+          name      = "allow-vpc-outbound",
+          source    = "10.0.0.0/8"
         }
       ]
-    }
+    },
+    policies = [{
+      name     = "policy2",
+      action   = "redirect",
+      priority = 1,
+      rules = [{
+        condition = "equals",
+        type      = "header",
+        field     = "MY-APP-HEADER",
+        value     = "New-value"
+      }],
+      target = [{
+        http_status_code = 302
+        url              = "https://www.example.com"
+      }]
+    }]
   }]
   application_port = 80
   group_managers = [

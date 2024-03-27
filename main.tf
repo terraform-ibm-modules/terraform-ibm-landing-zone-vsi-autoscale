@@ -30,6 +30,10 @@ data "ibm_is_vpc" "vpc" {
   identifier = var.vpc_id
 }
 
+locals {
+  default_security_group_id = data.ibm_is_vpc.vpc.default_security_group
+}
+
 ##############################################################################
 # Create Instance template
 ##############################################################################
@@ -63,9 +67,8 @@ resource "ibm_is_instance_template" "instance_template" {
   primary_network_interface {
     subnet = var.subnets[0].id
     security_groups = flatten([
-      (var.create_security_group ? [ibm_is_security_group.security_group[var.security_group.name].id] : []),
-      var.security_group_ids,
-      (var.create_security_group == false && length(var.security_group_ids) == 0 ? [data.ibm_is_vpc.vpc.default_security_group] : []),
+      ((var.create_security_group && var.security_group != null) ? [module.security_groups[var.security_group.name].security_group_id] : [local.default_security_group_id]),
+      var.security_group_ids
     ])
     allow_ip_spoofing = var.allow_ip_spoofing
   }

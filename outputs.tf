@@ -19,5 +19,5 @@ output "lbs_list" {
 
 output "security_groups" {
   description = "Security group information"
-  value       = ibm_is_security_group.security_group
+  value       = module.security_groups
 }
