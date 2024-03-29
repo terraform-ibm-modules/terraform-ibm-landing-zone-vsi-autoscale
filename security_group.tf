@@ -49,7 +49,8 @@ locals {
 
 module "security_groups" {
   for_each                     = local.source_to_remote_map
-  source                       = "git::https://github.com/terraform-ibm-modules/terraform-ibm-security-group.git?ref=v2.6.1"
+  source                       = "terraform-ibm-modules/security-group/ibm"
+  version                      = "2.6.1"
   add_ibm_cloud_internal_rules = each.value.add_ibm_cloud_internal_rules
   security_group_name          = "${var.prefix}-${each.key}"
   security_group_rules         = each.value.rules
