@@ -141,22 +141,7 @@ module "auto_scale" {
           source    = "10.0.0.0/8"
         }
       ]
-    },
-    policies = [{
-      name     = "policy2",
-      action   = "redirect",
-      priority = 1,
-      rules = [{
-        condition = "equals",
-        type      = "header",
-        field     = "MY-APP-HEADER",
-        value     = "New-value"
-      }],
-      target = [{
-        http_status_code = 302
-        url              = "https://www.example.com"
-      }]
-    }]
+    }
   }]
   application_port = 80
   group_managers = [

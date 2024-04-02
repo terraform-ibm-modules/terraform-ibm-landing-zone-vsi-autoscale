@@ -19,7 +19,7 @@ variable "region" {
 variable "prefix" {
   description = "The prefix that you would like to append to your resources"
   type        = string
-  default     = "slz-vsi"
+  default     = "slz-autoscale"
 }
 
 variable "resource_tags" {
