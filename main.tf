@@ -51,7 +51,7 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
 }
 
 resource "ibm_is_instance_template" "instance_template" {
-  name                             = "${var.prefix}-ins-tmplt"
+  name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-ins-tmplt" : "ins-tmplt")
   image                            = var.image_id
   profile                          = var.machine_type
   resource_group                   = var.resource_group_id
@@ -74,7 +74,7 @@ resource "ibm_is_instance_template" "instance_template" {
   }
 
   boot_volume {
-    name                             = "${var.prefix}-ins-tmplt-boot-vol"
+    name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-ins-tmplt-boot-vol" : "ins-tmplt-boot-vol")
     encryption                       = var.kms_encryption_enabled ? var.boot_volume_encryption_key : null
     delete_volume_on_instance_delete = var.auto_delete_volumes
     tags                             = var.tags
@@ -84,7 +84,7 @@ resource "ibm_is_instance_template" "instance_template" {
     for_each = var.block_storage_volumes
 
     content {
-      name                             = "${var.prefix}-${volume_attachments.value.name}-vol"
+      name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-vol" : "vol")
       delete_volume_on_instance_delete = var.auto_delete_volumes
 
       volume_prototype {

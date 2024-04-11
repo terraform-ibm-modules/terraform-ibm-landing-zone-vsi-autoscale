@@ -46,7 +46,7 @@ resource "time_sleep" "wait_180_seconds" {
 }
 
 resource "ibm_is_instance_group" "instance_group" {
-  name               = "${var.prefix}-ins-group"
+  name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id
   access_tags        = var.access_tags
   instance_template  = ibm_is_instance_template.instance_template.id
@@ -69,7 +69,7 @@ resource "ibm_is_instance_group" "instance_group" {
 resource "ibm_is_instance_group_manager" "instance_group_manager" {
   for_each = local.ins_group_mgr_map
 
-  name                 = "${var.prefix}-${each.value.name}"
+  name                 = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   aggregation_window   = each.value.aggregation_window
   instance_group       = ibm_is_instance_group.instance_group.id
   cooldown             = each.value.cooldown
@@ -89,7 +89,7 @@ resource "ibm_is_instance_group_manager" "instance_group_manager" {
 resource "ibm_is_instance_group_manager_action" "instance_group_manager_actions" {
   for_each = local.inst_group_mgr_action_map
 
-  name                   = "${var.prefix}-${each.value.name}"
+  name                   = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   instance_group         = ibm_is_instance_group.instance_group.id
   instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_name].manager_id
   cron_spec              = each.value.cron_spec
@@ -110,7 +110,7 @@ resource "ibm_is_instance_group_manager_policy" "instance_group_manager_policies
 
   instance_group         = ibm_is_instance_group.instance_group.id
   instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_name].manager_id
-  name                   = "${var.prefix}-${each.value.name}"
+  name                   = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   metric_type            = each.value.metric_type
   metric_value           = each.value.metric_value
   policy_type            = each.value.policy_type

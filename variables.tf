@@ -8,13 +8,9 @@ variable "resource_group_id" {
 }
 
 variable "prefix" {
-  description = "A unique identifier for resources. Must begin with a letter and end with a letter or number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 16 or fewer characters."
+  description = "The value that you would like to prefix to the name of the resources provisioned by this module. Explicitly set to null if you do not wish to use a prefix. This value is ignored if using one of the optional variables for explicit control over naming."
   type        = string
-
-  validation {
-    error_message = "Prefix must begin and end with a letter and contain only letters, numbers, and - characters."
-    condition     = can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.prefix))
-  }
+  default     = null
 }
 
 variable "zone" {
@@ -72,6 +68,12 @@ variable "subnets" {
 ##############################################################################
 # Autoscale (Instance template) Variables
 ##############################################################################
+variable "instance_tmplt_name" {
+  description = "The name to assign the instance template.  If no name is provided then the default will be `{prefix}-ins-tmplt`."
+  type        = string
+  default     = null
+}
+
 variable "availability_policy_host_failure" {
   description = "The availability policy to use for this virtual server instance. The action to perform if the compute host experiences a failure"
   type        = string
@@ -424,6 +426,11 @@ variable "load_balancers" {
 ##############################################################################
 # Autoscale (Instance Group) Variables
 ##############################################################################
+variable "instance_group_name" {
+  description = "The name to assign the instance group.  If no name is provided then the default will be `{prefix}-ins-group`."
+  type        = string
+  default     = null
+}
 
 variable "instance_count" {
   type        = number

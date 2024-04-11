@@ -52,7 +52,7 @@ module "security_groups" {
   source                       = "terraform-ibm-modules/security-group/ibm"
   version                      = "2.6.1"
   add_ibm_cloud_internal_rules = each.value.add_ibm_cloud_internal_rules
-  security_group_name          = "${var.prefix}-${each.key}"
+  security_group_name          = var.prefix != null ? "${var.prefix}-${each.key}" : each.key
   security_group_rules         = each.value.rules
   resource_group               = var.resource_group_id
   vpc_id                       = var.vpc_id

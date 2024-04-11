@@ -34,7 +34,7 @@ locals {
 
 resource "ibm_is_lb" "lb" {
   for_each        = local.load_balancer_map
-  name            = "${var.prefix}-${each.value.name}-lb"
+  name            = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   subnets         = var.subnets[*].id
   type            = each.value.type #checkov:skip=CKV2_IBM_1:See https://github.com/bridgecrewio/checkov/issues/5824#
   profile         = each.value.profile
@@ -63,7 +63,7 @@ resource "ibm_is_lb" "lb" {
 resource "ibm_is_lb_pool" "pool" {
   for_each       = local.load_balancer_map
   lb             = ibm_is_lb.lb[each.value.name].id
-  name           = "${var.prefix}-${each.value.name}-lb-pool"
+  name           = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   algorithm      = each.value.algorithm
   protocol       = each.value.protocol
   health_delay   = each.value.health_delay
