@@ -1,5 +1,5 @@
 <!-- Update the title -->
-# BM Secure Landing Zone VSI Autoscale Module
+# IBM Secure Landing Zone VSI Autoscale Module
 
 <!--
 Update status and "latest release" badges:
