@@ -1,4 +1,4 @@
-# End to end basic example
+# Basic example
 
 An end-to-end basic example that will provision the following:
 
