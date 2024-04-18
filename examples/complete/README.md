@@ -1,4 +1,12 @@
 # Complete example
 
-<!-- There is a pre-commit hook that will take the title of each example add include it in the repos main README.md  -->
-<!-- Add text below should describe exactly what resources are provisioned / configured by the example  -->
+An end-to-end complete example that will provision the following:
+
+- A new resource group if one is not passed in.
+- A new public SSH key if one is not passed in.
+- A new VPC with 3 subnets
+- A new placement group
+- A new instance template
+- An instance group manager using the template with an autoscale manager with an minimum membership of 1 VSI and max membership of 4
+- A policy with a CPU metric of 70
+- A VPC Application load balancer which the instances attach to

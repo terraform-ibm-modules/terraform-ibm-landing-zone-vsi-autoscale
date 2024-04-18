@@ -11,6 +11,7 @@ import (
 // Use existing resource group
 const resourceGroup = "geretain-test-resources"
 const completeExampleDir = "examples/complete"
+const basicExampleDir = "examples/basic"
 
 func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
@@ -25,17 +26,17 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 func TestRunCompleteExample(t *testing.T) {
 	t.Parallel()
 
-	options := setupOptions(t, "mod-template", completeExampleDir)
+	options := setupOptions(t, "vsi-auto-c", completeExampleDir)
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
 }
 
-func TestRunUpgradeExample(t *testing.T) {
+func TestRunBasicUpgradeExample(t *testing.T) {
 	t.Parallel()
 
-	options := setupOptions(t, "mod-template-upg", completeExampleDir)
+	options := setupOptions(t, "vsi-auto-upg", basicExampleDir)
 
 	output, err := options.RunTestUpgrade()
 	if !options.UpgradeTestSkipped {
