@@ -14,7 +14,7 @@ Update status and "latest release" badges:
 
 <!-- Add a description of module(s) in this repo -->
 This module creates an Auto Scale for VPC instance group which dynamically creates virtual server instances to meet the demands of your environment.  The virtual server instances (VSI) perscribed via an instance template can be connected to a load balancers.
-![vsi-module](https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi/main/.docs/vsi-autoscale.png)
+![vsi-module](https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/main/.docs/vsi-autoscale.png)
 
 
 <!-- Below content is automatically populated via pre-commit hook -->
