@@ -126,7 +126,7 @@ statement instead the previous block.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_security_groups"></a> [security\_groups](#module\_security\_groups) | terraform-ibm-modules/security-group/ibm | 2.6.1 |
+| <a name="module_security_groups"></a> [security\_groups](#module\_security\_groups) | terraform-ibm-modules/security-group/ibm | 2.6.2 |
 
 ### Resources
 
