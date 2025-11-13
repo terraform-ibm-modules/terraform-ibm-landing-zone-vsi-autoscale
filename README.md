@@ -22,8 +22,8 @@ This module creates an Auto Scale for VPC instance group which dynamically creat
 ## Overview
 * [terraform-ibm-landing-zone-vsi-autoscale](#terraform-ibm-landing-zone-vsi-autoscale)
 * [Examples](./examples)
-    * [Basic example](./examples/basic)
-    * [Complete example](./examples/complete)
+    * <div style="display: inline-block;"><a href="./examples/basic">Basic example</a></div> <div style="display: inline-block; vertical-align: middle;"><a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=lzva-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/basic" target="_blank"><img src="https://cloud.ibm.com/media/docs/images/icons/Deploy_to_cloud.svg" alt="Deploy to IBM Cloud button"></a></div>
+    * <div style="display: inline-block;"><a href="./examples/complete">Complete example</a></div> <div style="display: inline-block; vertical-align: middle;"><a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=lzva-complete-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/complete" target="_blank"><img src="https://cloud.ibm.com/media/docs/images/icons/Deploy_to_cloud.svg" alt="Deploy to IBM Cloud button"></a></div>
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
