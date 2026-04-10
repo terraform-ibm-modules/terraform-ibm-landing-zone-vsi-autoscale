@@ -25,4 +25,4 @@ repository:
   description: "This module creates an Auto Scale for VPC instance group which dynamically creates virtual server instances to meet the demands of your environment."
 
   # Use a comma-separated list of topics to set on the repo (ensure not to use any caps in the topic string).
-  topics: terraform, ibm-cloud, terraform-module, supported, stable
+  topics: terraform, ibm-cloud, terraform-module, supported, stable, core-team
