@@ -13,7 +13,7 @@ Update status and "latest release" badges:
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 <!-- Add a description of module(s) in this repo -->
-This module creates an Auto Scale for VPC instance group which dynamically creates virtual server instances to meet the demands of your environment.  The virtual server instances (VSI) perscribed via an instance template can be connected to a load balancers.
+This module creates an Auto Scale for VPC instance group which dynamically creates virtual server instances to meet the demands of your environment.  The virtual server instances (VSI) prescribed via an instance template can be connected to a load balancers.
 ![vsi-module](https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/main/.docs/vsi-autoscale.png)
 
 
