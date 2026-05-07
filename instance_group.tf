@@ -49,6 +49,7 @@ resource "ibm_is_instance_group" "instance_group" {
   name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id
   access_tags        = var.access_tags
+  tags               = var.tags
   instance_template  = ibm_is_instance_template.instance_template.id
   instance_count     = var.instance_count
   subnets            = var.subnets[*].id
