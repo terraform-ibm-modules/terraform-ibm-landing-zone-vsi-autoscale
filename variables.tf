@@ -160,27 +160,14 @@ variable "security_group" {
     add_ibm_cloud_internal_rules = optional(bool, false)
     rules = list(
       object({
-        name      = string
-        direction = string
-        source    = string
-        tcp = optional(
-          object({
-            port_max = number
-            port_min = number
-          })
-        )
-        udp = optional(
-          object({
-            port_max = number
-            port_min = number
-          })
-        )
-        icmp = optional(
-          object({
-            type = number
-            code = number
-          })
-        )
+        name       = string
+        direction  = string
+        source     = string
+        protocol   = optional(string)
+        port_min   = optional(number)
+        port_max   = optional(number)
+        type       = optional(number)
+        code       = optional(number)
       })
     )
   })
@@ -298,27 +285,14 @@ variable "load_balancers" {
           add_ibm_cloud_internal_rules = optional(bool, false)
           rules = list(
             object({
-              name      = string
-              direction = string
-              source    = string
-              tcp = optional(
-                object({
-                  port_max = number
-                  port_min = number
-                })
-              )
-              udp = optional(
-                object({
-                  port_max = number
-                  port_min = number
-                })
-              )
-              icmp = optional(
-                object({
-                  type = number
-                  code = number
-                })
-              )
+              name       = string
+              direction  = string
+              source     = string
+              protocol   = optional(string)
+              port_min   = optional(number)
+              port_max   = optional(number)
+              type       = optional(number)
+              code       = optional(number)
             })
           )
         })
