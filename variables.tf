@@ -160,14 +160,14 @@ variable "security_group" {
     add_ibm_cloud_internal_rules = optional(bool, false)
     rules = list(
       object({
-        name       = string
-        direction  = string
-        source     = string
-        protocol   = optional(string)
-        port_min   = optional(number)
-        port_max   = optional(number)
-        type       = optional(number)
-        code       = optional(number)
+        name      = string
+        direction = string
+        source    = string
+        protocol  = optional(string)
+        port_min  = optional(number)
+        port_max  = optional(number)
+        type      = optional(number)
+        code      = optional(number)
       })
     )
   })
@@ -285,14 +285,14 @@ variable "load_balancers" {
           add_ibm_cloud_internal_rules = optional(bool, false)
           rules = list(
             object({
-              name       = string
-              direction  = string
-              source     = string
-              protocol   = optional(string)
-              port_min   = optional(number)
-              port_max   = optional(number)
-              type       = optional(number)
-              code       = optional(number)
+              name      = string
+              direction = string
+              source    = string
+              protocol  = optional(string)
+              port_min  = optional(number)
+              port_max  = optional(number)
+              type      = optional(number)
+              code      = optional(number)
             })
           )
         })
