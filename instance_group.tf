@@ -57,11 +57,6 @@ resource "ibm_is_instance_group" "instance_group" {
   load_balancer      = length(var.load_balancers) > 0 ? ibm_is_lb.lb[var.load_balancers[0].name].id : null
   load_balancer_pool = length(var.load_balancers) > 0 ? ibm_is_lb_pool.pool[var.load_balancers[0].name].pool_id : null
 
-  lifecycle {
-    ignore_changes = [
-      instance_count,
-    ]
-  }
 }
 
 ##############################################################################

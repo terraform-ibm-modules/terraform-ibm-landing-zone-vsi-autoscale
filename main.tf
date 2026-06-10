@@ -88,6 +88,10 @@ resource "ibm_is_instance_template" "instance_template" {
       }
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ##############################################################################
