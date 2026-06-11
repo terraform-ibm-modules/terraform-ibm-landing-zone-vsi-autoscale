@@ -33,6 +33,12 @@ locals {
 # NOTE: The below auth policy cannot be scoped to a source resource group due to
 # the fact that the Block storage volume does not yet exist in the resource group.
 
+# Tracks ssh_key_ids so replace_triggered_by can watch a variable — without
+# this indirection, replace_triggered_by only accepts resource references.
+resource "terraform_data" "ssh_keys_replacement_trigger" {
+  input = var.ssh_key_ids
+}
+
 resource "ibm_iam_authorization_policy" "block_storage_policy" {
   count                       = var.kms_encryption_enabled == false || var.skip_iam_authorization_policy ? 0 : 1
   source_service_name         = "server-protect"
@@ -87,6 +93,10 @@ resource "ibm_is_instance_template" "instance_template" {
         tags           = var.tags
       }
     }
+  }
+
+  lifecycle {
+    replace_triggered_by = [terraform_data.ssh_keys_replacement_trigger]
   }
 }
 
