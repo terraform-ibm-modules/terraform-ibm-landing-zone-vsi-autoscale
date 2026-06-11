@@ -42,8 +42,20 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
   description                 = "Allow block storage volumes to be encrypted by Key Management instance."
 }
 
+resource "random_id" "template_suffix" {
+  keepers = {
+    image_id     = var.image_id
+    profile      = var.machine_type
+    keys         = join(",", sort(var.ssh_key_ids))
+    user_data    = var.user_data
+    placement    = var.placement_group_id
+    avail_policy = var.availability_policy_host_failure
+  }
+  byte_length = 4
+}
+
 resource "ibm_is_instance_template" "instance_template" {
-  name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-ins-tmplt" : "ins-tmplt")
+  name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-ins-tmplt-${random_id.template_suffix.hex}" : "ins-tmplt-${random_id.template_suffix.hex}")
   image                            = var.image_id
   profile                          = var.machine_type
   resource_group                   = var.resource_group_id
