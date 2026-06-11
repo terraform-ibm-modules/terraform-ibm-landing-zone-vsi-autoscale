@@ -42,6 +42,8 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
   description                 = "Allow block storage volumes to be encrypted by Key Management instance."
 }
 
+# Generates unique template name suffix to enable create_before_destroy lifecycle.
+# Keepers trigger recreation when template attributes change, ensuring new templates can be created before destroying old ones attached to instance groups.
 resource "random_id" "template_suffix" {
   keepers = {
     image_id     = var.image_id
