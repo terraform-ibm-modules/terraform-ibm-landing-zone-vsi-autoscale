@@ -48,8 +48,22 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
   description                 = "Allow block storage volumes to be encrypted by Key Management instance."
 }
 
+# Generates unique template name suffix to enable create_before_destroy lifecycle.
+# Keepers trigger recreation when template attributes change, ensuring new templates can be created before destroying old ones attached to instance groups.
+resource "random_id" "template_suffix" {
+  keepers = {
+    image_id     = var.image_id
+    profile      = var.machine_type
+    keys         = join(",", sort(var.ssh_key_ids))
+    user_data    = var.user_data
+    placement    = var.placement_group_id
+    avail_policy = var.availability_policy_host_failure
+  }
+  byte_length = 4
+}
+
 resource "ibm_is_instance_template" "instance_template" {
-  name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-ins-tmplt" : "ins-tmplt")
+  name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-ins-tmplt-${random_id.template_suffix.hex}" : "ins-tmplt-${random_id.template_suffix.hex}")
   image                            = var.image_id
   profile                          = var.machine_type
   resource_group                   = var.resource_group_id
@@ -96,6 +110,7 @@ resource "ibm_is_instance_template" "instance_template" {
   }
 
   lifecycle {
+    create_before_destroy = true
     replace_triggered_by = [terraform_data.ssh_keys_replacement_trigger]
   }
 }
