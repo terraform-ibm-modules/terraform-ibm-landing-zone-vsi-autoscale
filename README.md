@@ -22,14 +22,14 @@ This module creates an Auto Scale for VPC instance group which dynamically creat
 ## Overview
 <ul>
   <li><a href="#terraform-ibm-landing-zone-vsi-autoscale">terraform-ibm-landing-zone-vsi-autoscale</a></li>
-  <li><a href="./examples">Examples</a>
+  <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples">Examples</a>
     <ul>
       <li>
-        <a href="./examples/basic">Basic example</a>
+        <a href="https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/basic">Basic example</a>
         <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=landing-zone-vsi-autoscale-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/basic"><img src="https://img.shields.io/badge/Deploy%20with%20IBM%20Cloud%20Schematics-0f62fe?style=flat&logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
       </li>
       <li>
-        <a href="./examples/complete">Complete example</a>
+        <a href="https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/complete">Complete example</a>
         <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=landing-zone-vsi-autoscale-complete-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/complete"><img src="https://img.shields.io/badge/Deploy%20with%20IBM%20Cloud%20Schematics-0f62fe?style=flat&logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
       </li>
     </ul>
