@@ -42,6 +42,13 @@ locals {
 
 }
 
+# State migration for existing deployments
+# This ensures smooth upgrade from previous versions where the resource was named "instance_group"
+moved {
+  from = ibm_is_instance_group.instance_group
+  to   = ibm_is_instance_group.autoscale[0]
+}
+
 resource "time_sleep" "wait_180_seconds" {
   depends_on = [
     ibm_is_instance_group.autoscale,
