@@ -102,6 +102,6 @@ module "manual_scale" {
   instance_count                = 4
   load_balancers                = []
   application_port              = null
-  auto_scale                    = false  # Disable autoscale for manual control
-  group_managers                = []     # No autoscale managers
+  auto_scale                    = false # Disable autoscale for manual control
+  group_managers                = []    # No autoscale managers
 }

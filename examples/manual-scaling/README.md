@@ -54,11 +54,11 @@ With `auto_scale = false`, you can:
    ```hcl
    # Change template (e.g., machine_type)
    machine_type = "cx2-4x8"
-   
+
    # Scale to 0 to remove old instances
    instance_count = 0
    # Apply
-   
+
    # Scale back up with new template
    instance_count = 2
    # Apply
