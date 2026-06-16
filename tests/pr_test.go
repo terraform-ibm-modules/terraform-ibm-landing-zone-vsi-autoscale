@@ -12,6 +12,7 @@ import (
 const resourceGroup = "geretain-test-resources"
 const completeExampleDir = "examples/complete"
 const basicExampleDir = "examples/basic"
+const manualScalingExampleDir = "examples/manual-scaling"
 
 func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
@@ -43,4 +44,14 @@ func TestRunBasicUpgradeExample(t *testing.T) {
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
 	}
+}
+
+func TestRunManualScalingExample(t *testing.T) {
+	t.Parallel()
+
+	options := setupOptions(t, "vsi-auto-ms", manualScalingExampleDir)
+
+	output, err := options.RunTestConsistency()
+	assert.Nil(t, err, "This should not have errored")
+	assert.NotNil(t, output, "Expected some output")
 }

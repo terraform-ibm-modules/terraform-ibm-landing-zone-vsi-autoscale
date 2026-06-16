@@ -22,15 +22,19 @@ This module creates an Auto Scale for VPC instance group which dynamically creat
 ## Overview
 <ul>
   <li><a href="#terraform-ibm-landing-zone-vsi-autoscale">terraform-ibm-landing-zone-vsi-autoscale</a></li>
-  <li><a href="./examples">Examples</a>
+  <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples">Examples</a>
     <ul>
       <li>
-        <a href="./examples/basic">Basic example</a>
+        <a href="https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/basic">Basic example</a>
         <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=landing-zone-vsi-autoscale-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/basic"><img src="https://img.shields.io/badge/Deploy%20with%20IBM%20Cloud%20Schematics-0f62fe?style=flat&logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
       </li>
       <li>
-        <a href="./examples/complete">Complete example</a>
+        <a href="https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/complete">Complete example</a>
         <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=landing-zone-vsi-autoscale-complete-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/complete"><img src="https://img.shields.io/badge/Deploy%20with%20IBM%20Cloud%20Schematics-0f62fe?style=flat&logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
+      </li>
+      <li>
+        <a href="https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/manual-scaling">Manual Scaling Example</a>
+        <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=landing-zone-vsi-autoscale-manual-scaling-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone-vsi-autoscale/tree/main/examples/manual-scaling"><img src="https://img.shields.io/badge/Deploy%20with%20IBM%20Cloud%20Schematics-0f62fe?style=flat&logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
       </li>
     </ul>
     ℹ️ Ctrl/Cmd+Click or right-click on the Schematics deploy button to open in a new tab.
@@ -145,7 +149,8 @@ statement instead the previous block.
 | Name | Type |
 |------|------|
 | [ibm_iam_authorization_policy.block_storage_policy](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/iam_authorization_policy) | resource |
-| [ibm_is_instance_group.instance_group](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group) | resource |
+| [ibm_is_instance_group.autoscale](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group) | resource |
+| [ibm_is_instance_group.static](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group) | resource |
 | [ibm_is_instance_group_manager.instance_group_manager](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group_manager) | resource |
 | [ibm_is_instance_group_manager_action.instance_group_manager_actions](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group_manager_action) | resource |
 | [ibm_is_instance_group_manager_policy.instance_group_manager_policies](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group_manager_policy) | resource |
@@ -167,6 +172,7 @@ statement instead the previous block.
 | <a name="input_allow_ip_spoofing"></a> [allow\_ip\_spoofing](#input\_allow\_ip\_spoofing) | Allow IP spoofing on the primary network interface | `bool` | `false` | no |
 | <a name="input_application_port"></a> [application\_port](#input\_application\_port) | The instance group uses when scaling up instances to supply the port for the Load Balancer pool member. | `number` | `null` | no |
 | <a name="input_auto_delete_volumes"></a> [auto\_delete\_volumes](#input\_auto\_delete\_volumes) | Auto delete volumes when the instance is deleted | `bool` | `true` | no |
+| <a name="input_auto_scale"></a> [auto\_scale](#input\_auto\_scale) | Set to true if using autoscale managers that will dynamically adjust instance\_count. When true, instance\_count changes are ignored to prevent drift. When false, allows manual control of instance\_count through Terraform. | `bool` | `true` | no |
 | <a name="input_availability_policy_host_failure"></a> [availability\_policy\_host\_failure](#input\_availability\_policy\_host\_failure) | The availability policy to use for this virtual server instance. The action to perform if the compute host experiences a failure | `string` | `"restart"` | no |
 | <a name="input_block_storage_volumes"></a> [block\_storage\_volumes](#input\_block\_storage\_volumes) | List describing the block storage volumes that will be attached to each vsi | <pre>list(<br/>    object({<br/>      name              = string<br/>      profile           = string<br/>      capacity          = optional(number)<br/>      iops              = optional(number)<br/>      encryption_key    = optional(string)<br/>      resource_group_id = optional(string)<br/>    })<br/>  )</pre> | `[]` | no |
 | <a name="input_boot_volume_encryption_key"></a> [boot\_volume\_encryption\_key](#input\_boot\_volume\_encryption\_key) | CRN of boot volume encryption key | `string` | `null` | no |

@@ -9,7 +9,7 @@ output "intstance_template" {
 
 output "ibm_is_instance_group" {
   description = "Instance group information"
-  value       = ibm_is_instance_group.instance_group
+  value       = var.auto_scale ? ibm_is_instance_group.autoscale[0] : ibm_is_instance_group.static[0]
 }
 
 output "lbs_list" {
