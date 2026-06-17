@@ -433,14 +433,14 @@ variable "application_port" {
   default     = null
 }
 
-variable "auto_scale" {
+variable "ignore_instance_count_changes" {
   type        = bool
-  description = "Set to true if using autoscale managers that will dynamically adjust instance_count. When true, instance_count changes are ignored to prevent drift. When false, allows manual control of instance_count through Terraform."
+  description = "Enable if using instance group managers with autoscaling. When true, stops Terraform from managing instance_count to prevent drift from autoscale adjustments. When false, allows manual control of instance_count through Terraform."
   default     = true
 
   validation {
-    condition     = var.auto_scale == true || length(var.group_managers) == 0
-    error_message = "When auto_scale is set to false, group_managers must be empty. Autoscale managers require auto_scale to be true to prevent drift from dynamic instance count adjustments."
+    condition     = var.ignore_instance_count_changes == true || length(var.group_managers) == 0
+    error_message = "When ignore_instance_count_changes is set to false, group_managers must be empty. Autoscale managers require ignore_instance_count_changes to be true to prevent drift from dynamic instance count adjustments."
   }
 }
 

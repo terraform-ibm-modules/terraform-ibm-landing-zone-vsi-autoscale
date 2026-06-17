@@ -19,3 +19,5 @@ An end-to-end complete example that will provision the following:
 - An instance group manager using the template with an autoscale manager with an minimum membership of 1 VSI and max membership of 4
 - A policy with a CPU metric of 70
 - A VPC Application load balancer which the instances attach to
+
+This example demonstrates dynamic scaling mode (`ignore_instance_count_changes = true`), where the autoscale manager controls instance count. To test manual scaling mode, set `ignore_instance_count_changes = false` in the module configuration.

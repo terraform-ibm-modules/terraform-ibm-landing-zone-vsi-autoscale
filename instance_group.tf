@@ -3,7 +3,7 @@
 ##############################################################################
 locals {
   # Determine the instance group ID based on which resource was created
-  instance_group_id = var.auto_scale ? ibm_is_instance_group.autoscale[0].id : ibm_is_instance_group.static[0].id
+  instance_group_id = var.ignore_instance_count_changes ? ibm_is_instance_group.instance_group_with_managed_instance_count[0].id : ibm_is_instance_group.instance_group_with_unmanaged_instance_count[0].id
 
   ins_group_mgr_map = {
     for mgr in var.group_managers :
@@ -46,21 +46,18 @@ locals {
 # This ensures smooth upgrade from previous versions where the resource was named "instance_group"
 moved {
   from = ibm_is_instance_group.instance_group
-  to   = ibm_is_instance_group.autoscale[0]
+  to   = ibm_is_instance_group.instance_group_with_managed_instance_count[0]
 }
 
 resource "time_sleep" "wait_180_seconds" {
-  depends_on = [
-    ibm_is_instance_group.autoscale,
-    ibm_is_instance_group.static
-  ]
-
+  depends_on       = [ibm_is_instance_group.instance_group_with_managed_instance_count, ibm_is_instance_group.instance_group_with_unmanaged_instance_count]
   destroy_duration = "180s"
 }
 
-# Instance group for autoscale scenarios - ignores instance_count changes
-resource "ibm_is_instance_group" "autoscale" {
-  count              = var.auto_scale ? 1 : 0
+# Instance group with managed instance count - ignores instance_count changes to prevent drift
+# Use this when autoscale managers control the instance count
+resource "ibm_is_instance_group" "instance_group_with_managed_instance_count" {
+  count              = var.ignore_instance_count_changes ? 1 : 0
   name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id
   access_tags        = var.access_tags
@@ -77,9 +74,10 @@ resource "ibm_is_instance_group" "autoscale" {
   }
 }
 
-# Instance group for static/manual scaling - tracks instance_count changes
-resource "ibm_is_instance_group" "static" {
-  count              = var.auto_scale ? 0 : 1
+# Instance group with unmanaged instance count - tracks instance_count changes for manual control
+# Use this when you want Terraform to manage the instance count
+resource "ibm_is_instance_group" "instance_group_with_unmanaged_instance_count" {
+  count              = var.ignore_instance_count_changes ? 0 : 1
   name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id
   access_tags        = var.access_tags
