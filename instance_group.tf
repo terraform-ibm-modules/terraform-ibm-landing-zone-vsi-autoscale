@@ -3,7 +3,7 @@
 ##############################################################################
 locals {
   # Determine the instance group ID based on which resource was created
-  instance_group_id = var.ignore_instance_count_changes ? ibm_is_instance_group.instance_group_with_managed_instance_count[0].id : ibm_is_instance_group.instance_group_with_unmanaged_instance_count[0].id
+  instance_group_id = var.ignore_instance_count_changes ? ibm_is_instance_group.instance_group_with_unmanaged_instance_count[0].id : ibm_is_instance_group.instance_group_with_managed_instance_count[0].id
 
   ins_group_mgr_map = {
     for mgr in var.group_managers :
@@ -46,7 +46,7 @@ locals {
 # This ensures smooth upgrade from previous versions where the resource was named "instance_group"
 moved {
   from = ibm_is_instance_group.instance_group
-  to   = ibm_is_instance_group.instance_group_with_managed_instance_count[0]
+  to   = ibm_is_instance_group.instance_group_with_unmanaged_instance_count[0]
 }
 
 resource "time_sleep" "wait_180_seconds" {
@@ -54,9 +54,9 @@ resource "time_sleep" "wait_180_seconds" {
   destroy_duration = "180s"
 }
 
-# Instance group with managed instance count - ignores instance_count changes to prevent drift
-# Use this when autoscale managers control the instance count
-resource "ibm_is_instance_group" "instance_group_with_managed_instance_count" {
+# Instance group with unmanaged instance count - ignores instance_count changes to prevent drift
+# Use this when autoscale managers control the instance count (Terraform does not manage instance_count)
+resource "ibm_is_instance_group" "instance_group_with_unmanaged_instance_count" {
   count              = var.ignore_instance_count_changes ? 1 : 0
   name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id
@@ -74,9 +74,9 @@ resource "ibm_is_instance_group" "instance_group_with_managed_instance_count" {
   }
 }
 
-# Instance group with unmanaged instance count - tracks instance_count changes for manual control
+# Instance group with managed instance count - tracks instance_count changes for manual control
 # Use this when you want Terraform to manage the instance count
-resource "ibm_is_instance_group" "instance_group_with_unmanaged_instance_count" {
+resource "ibm_is_instance_group" "instance_group_with_managed_instance_count" {
   count              = var.ignore_instance_count_changes ? 0 : 1
   name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id

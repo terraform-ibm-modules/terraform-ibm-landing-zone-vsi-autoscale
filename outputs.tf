@@ -9,7 +9,7 @@ output "intstance_template" {
 
 output "ibm_is_instance_group" {
   description = "Instance group information"
-  value       = var.ignore_instance_count_changes ? ibm_is_instance_group.instance_group_with_managed_instance_count[0] : ibm_is_instance_group.instance_group_with_unmanaged_instance_count[0]
+  value       = var.ignore_instance_count_changes ? ibm_is_instance_group.instance_group_with_unmanaged_instance_count[0] : ibm_is_instance_group.instance_group_with_managed_instance_count[0]
 }
 
 output "lbs_list" {
