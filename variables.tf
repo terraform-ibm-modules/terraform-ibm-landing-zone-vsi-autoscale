@@ -433,6 +433,17 @@ variable "application_port" {
   default     = null
 }
 
+variable "ignore_instance_count_changes" {
+  type        = bool
+  description = "Enable if using instance group managers with autoscaling. When true, stops Terraform from managing instance_count to prevent drift from autoscale adjustments. When false, allows manual control of instance_count through Terraform."
+  default     = true
+
+  validation {
+    condition     = var.ignore_instance_count_changes == true || length(var.group_managers) == 0
+    error_message = "When ignore_instance_count_changes is set to false, group_managers must be empty. Autoscale managers require ignore_instance_count_changes to be true to prevent drift from dynamic instance count adjustments."
+  }
+}
+
 variable "group_managers" {
   description = "Instance group manager to add to the instance group"
   type = list(
