@@ -70,6 +70,18 @@ resource "ibm_is_instance_template" "instance_template" {
   dedicated_host                   = var.dedicated_host
   dedicated_host_group             = var.dedicated_host_group
 
+  default_trusted_profile_target    = var.trusted_profile_id
+  default_trusted_profile_auto_link = var.trusted_profile_id != null ? var.default_trusted_profile_auto_link : null
+
+  dynamic "metadata_service" {
+    for_each = var.trusted_profile_id != null ? [1] : []
+    content {
+      enabled            = true
+      protocol           = "https"
+      response_hop_limit = 1
+    }
+  }
+
   primary_network_interface {
     subnet = var.subnets[0].id
     security_groups = flatten([
