@@ -46,12 +46,13 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
 # Keepers trigger recreation when template attributes change, ensuring new templates can be created before destroying old ones attached to instance groups.
 resource "random_id" "template_suffix" {
   keepers = {
-    image_id     = var.image_id
-    profile      = var.machine_type
-    keys         = join(",", sort(var.ssh_key_ids))
-    user_data    = var.user_data
-    placement    = var.placement_group_id
-    avail_policy = var.availability_policy_host_failure
+    image_id        = var.image_id
+    profile         = var.machine_type
+    keys            = join(",", sort(var.ssh_key_ids))
+    user_data       = var.user_data
+    placement       = var.placement_group_id
+    avail_policy    = var.availability_policy_host_failure
+    trusted_profile = var.trusted_profile_id
   }
   byte_length = 4
 }
