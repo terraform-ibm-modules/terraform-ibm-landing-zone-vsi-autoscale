@@ -56,7 +56,7 @@ module "security_groups" {
   security_group_rules         = each.value.rules
   resource_group               = var.resource_group_id
   vpc_id                       = var.vpc_id
-  tags                         = var.tags
+  resource_tags                = var.tags
   access_tags                  = var.access_tags
 }
 
