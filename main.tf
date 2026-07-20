@@ -46,12 +46,13 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
 # Keepers trigger recreation when template attributes change, ensuring new templates can be created before destroying old ones attached to instance groups.
 resource "random_id" "template_suffix" {
   keepers = {
-    image_id     = var.image_id
-    profile      = var.machine_type
-    keys         = join(",", sort(var.ssh_key_ids))
-    user_data    = var.user_data
-    placement    = var.placement_group_id
-    avail_policy = var.availability_policy_host_failure
+    image_id        = var.image_id
+    profile         = var.machine_type
+    keys            = join(",", sort(var.ssh_key_ids))
+    user_data       = var.user_data
+    placement       = var.placement_group_id
+    avail_policy    = var.availability_policy_host_failure
+    trusted_profile = var.trusted_profile_id
   }
   byte_length = 4
 }
@@ -69,6 +70,18 @@ resource "ibm_is_instance_template" "instance_template" {
   placement_group                  = var.placement_group_id
   dedicated_host                   = var.dedicated_host
   dedicated_host_group             = var.dedicated_host_group
+
+  default_trusted_profile_target    = var.trusted_profile_id
+  default_trusted_profile_auto_link = var.trusted_profile_id != null ? var.default_trusted_profile_auto_link : null
+
+  dynamic "metadata_service" {
+    for_each = var.trusted_profile_id != null ? [1] : []
+    content {
+      enabled            = true
+      protocol           = "https"
+      response_hop_limit = 1
+    }
+  }
 
   primary_network_interface {
     subnet = var.subnets[0].id

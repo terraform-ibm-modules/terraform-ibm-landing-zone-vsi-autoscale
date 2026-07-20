@@ -56,6 +56,15 @@ module "slz_vpc" {
 }
 
 #############################################################################
+# Trusted Profile
+#############################################################################
+
+resource "ibm_iam_trusted_profile" "trusted_profile" {
+  name        = "${var.prefix}-trusted-profile"
+  description = "Trusted profile for VSI autoscale instances"
+}
+
+#############################################################################
 # Placement group
 #############################################################################
 
@@ -74,29 +83,31 @@ data "ibm_is_image" "image" {
 }
 
 module "auto_scale" {
-  source                        = "../../"
-  resource_group_id             = module.resource_group.resource_group_id
-  zone                          = "${var.region}-1"
-  image_id                      = data.ibm_is_image.image.id
-  create_security_group         = false
-  security_group                = null
-  tags                          = var.resource_tags
-  access_tags                   = var.access_tags
-  subnets                       = module.slz_vpc.subnet_zone_list
-  vpc_id                        = module.slz_vpc.vpc_id
-  prefix                        = var.prefix
-  placement_group_id            = ibm_is_placement_group.placement_group.id
-  machine_type                  = "cx2-2x4"
-  user_data                     = null
-  skip_iam_authorization_policy = true
-  existing_kms_instance_guid    = null
-  kms_encryption_enabled        = false
-  boot_volume_encryption_key    = null
-  ssh_key_ids                   = [local.ssh_key_id]
-  block_storage_volumes         = []
-  instance_count                = 1
-  load_balancers                = []
-  application_port              = null
+  source                            = "../../"
+  resource_group_id                 = module.resource_group.resource_group_id
+  zone                              = "${var.region}-1"
+  image_id                          = data.ibm_is_image.image.id
+  create_security_group             = false
+  security_group                    = null
+  tags                              = var.resource_tags
+  access_tags                       = var.access_tags
+  subnets                           = module.slz_vpc.subnet_zone_list
+  vpc_id                            = module.slz_vpc.vpc_id
+  prefix                            = var.prefix
+  placement_group_id                = ibm_is_placement_group.placement_group.id
+  machine_type                      = "cx2-2x4"
+  user_data                         = null
+  skip_iam_authorization_policy     = true
+  existing_kms_instance_guid        = null
+  kms_encryption_enabled            = false
+  boot_volume_encryption_key        = null
+  ssh_key_ids                       = [local.ssh_key_id]
+  block_storage_volumes             = []
+  instance_count                    = 1
+  load_balancers                    = []
+  application_port                  = null
+  trusted_profile_id                = ibm_iam_trusted_profile.trusted_profile.id
+  default_trusted_profile_auto_link = true
   group_managers = [
     {
       name                 = "test"

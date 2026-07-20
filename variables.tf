@@ -153,6 +153,18 @@ variable "placement_group_id" {
   default     = null
 }
 
+variable "trusted_profile_id" {
+  description = "The ID of the trusted profile to attach to each VSI in the instance group. When set, the metadata service is automatically enabled on the instance template so that instances can obtain identity tokens via the metadata service. See https://cloud.ibm.com/docs/vpc?topic=vpc-imd-trusted-profile-metadata."
+  type        = string
+  default     = null
+}
+
+variable "default_trusted_profile_auto_link" {
+  description = "Whether to automatically link the trusted profile specified in var.trusted_profile_id to the created VSIs. Only takes effect when var.trusted_profile_id is set."
+  type        = bool
+  default     = true
+}
+
 variable "security_group" {
   description = "Security group created for VSI"
   type = object({
