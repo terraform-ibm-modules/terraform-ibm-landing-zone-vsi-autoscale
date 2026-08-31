@@ -70,6 +70,22 @@ resource "ibm_is_lb_pool" "pool" {
   health_retries = each.value.health_retries
   health_timeout = each.value.health_timeout
   health_type    = each.value.health_type
+  proxy_protocol = each.value.proxy_protocol
+
+  dynamic "client_authentication" {
+    for_each = each.value.pool_client_authentication == null ? [] : [each.value.pool_client_authentication]
+    content {
+      certificate_instance = client_authentication.value.certificate_instance
+    }
+  }
+
+  dynamic "server_authentication" {
+    for_each = each.value.server_authentication == null ? [] : [each.value.server_authentication]
+    content {
+      certificate_authority = server_authentication.value.certificate_authority
+      verify_certificate    = server_authentication.value.verify_certificate
+    }
+  }
 }
 
 ##############################################################################
@@ -87,6 +103,14 @@ resource "ibm_is_lb_listener" "listener" {
   certificate_instance    = each.value.certificate_instance
   connection_limit        = each.value.connection_limit > 0 ? each.value.connection_limit : null
   idle_connection_timeout = each.value.idle_connection_timeout
+
+  dynamic "client_authentication" {
+    for_each = each.value.listener_client_authentication == null ? [] : [each.value.listener_client_authentication]
+    content {
+      certificate_authority       = client_authentication.value.certificate_authority
+      certificate_revocation_list = client_authentication.value.certificate_revocation_list
+    }
+  }
 }
 
 ##############################################################################
