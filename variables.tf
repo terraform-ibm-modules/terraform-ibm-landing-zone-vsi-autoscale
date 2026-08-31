@@ -33,7 +33,7 @@ variable "access_tags" {
     condition = alltrue([
       for tag in var.access_tags : can(regex("[\\w\\-_\\.]+:[\\w\\-_\\.]+", tag)) && length(tag) <= 128
     ])
-    error_message = "Tags must match the regular expression \"[\\w\\-_\\.]+:[\\w\\-_\\.]+\". For more information, see https://cloud.ibm.com/docs/account?topic=account-tag&interface=ui#limits."
+    error_message = "Tags must match the regular expression \"[\\w\\-_\\.]+:[\\w\\-_\\.]+\". For more information, see https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial."
   }
 }
 
@@ -285,6 +285,25 @@ variable "load_balancers" {
       health_type             = string
       pool_member_port        = string
       profile                 = optional(string)
+      # mTLS / proxy support
+      proxy_protocol = optional(string)
+      listener_client_authentication = optional(
+        object({
+          certificate_authority       = string
+          certificate_revocation_list = optional(string)
+        })
+      )
+      pool_client_authentication = optional(
+        object({
+          certificate_instance = string
+        })
+      )
+      server_authentication = optional(
+        object({
+          certificate_authority = optional(string)
+          verify_certificate    = optional(bool)
+        })
+      )
       dns = optional(
         object({
           instance_crn = string
@@ -419,6 +438,16 @@ variable "load_balancers" {
   validation {
     error_message = "Each load balancer must have a unique name."
     condition     = length(distinct(var.load_balancers[*].name)) == length(var.load_balancers[*].name)
+  }
+
+  validation {
+    error_message = "Load Balancer Pool proxy_protocol can only be `disabled`, `v1`, or `v2`."
+    condition = length(
+      flatten([
+        for load_balancer in var.load_balancers :
+        true if(load_balancer.proxy_protocol != null && !contains(["disabled", "v1", "v2"], load_balancer.proxy_protocol))
+      ])
+    ) == 0
   }
 }
 
