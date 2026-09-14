@@ -9,7 +9,10 @@ locals {
 
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
 resource "time_sleep" "wait_for_authorization_policy" {
-  depends_on = [ibm_iam_authorization_policy.block_storage_policy]
+  depends_on = [
+    ibm_iam_authorization_policy.block_storage_policy,
+    ibm_iam_authorization_policy.instance_group_trusted_profile_policy
+  ]
 
   create_duration = "30s"
 }
@@ -40,6 +43,14 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
   target_resource_instance_id = var.existing_kms_instance_guid
   roles                       = ["Reader"]
   description                 = "Allow block storage volumes to be encrypted by Key Management instance."
+}
+
+resource "ibm_iam_authorization_policy" "instance_group_trusted_profile_policy" {
+  count               = var.trusted_profile_id != null && !var.skip_iam_authorization_policy ? 1 : 0
+  source_service_name = "is.instance-group"
+  target_service_name = "iam-identity"
+  roles               = ["Operator"]
+  description         = "Allow instance groups to link trusted profiles to instances."
 }
 
 # Generates unique template name suffix to enable create_before_destroy lifecycle.
