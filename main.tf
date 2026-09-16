@@ -9,7 +9,10 @@ locals {
 
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
 resource "time_sleep" "wait_for_authorization_policy" {
-  depends_on = [ibm_iam_authorization_policy.block_storage_policy]
+  depends_on = [
+    ibm_iam_authorization_policy.block_storage_policy,
+    ibm_iam_authorization_policy.instance_group_trusted_profile_policy
+  ]
 
   create_duration = "30s"
 }
@@ -42,6 +45,14 @@ resource "ibm_iam_authorization_policy" "block_storage_policy" {
   description                 = "Allow block storage volumes to be encrypted by Key Management instance."
 }
 
+resource "ibm_iam_authorization_policy" "instance_group_trusted_profile_policy" {
+  count               = var.trusted_profile_id != null && !var.skip_iam_authorization_policy ? 1 : 0
+  source_service_name = "is"
+  target_service_name = "iam-identity"
+  roles               = ["Editor"]
+  description         = "Allow VPC infrastructure to link trusted profiles to instances."
+}
+
 # Generates unique template name suffix to enable create_before_destroy lifecycle.
 # Keepers trigger recreation when template attributes change, ensuring new templates can be created before destroying old ones attached to instance groups.
 resource "random_id" "template_suffix" {
@@ -58,6 +69,9 @@ resource "random_id" "template_suffix" {
 }
 
 resource "ibm_is_instance_template" "instance_template" {
+  depends_on = [
+    time_sleep.wait_for_authorization_policy
+  ]
   name                             = var.instance_tmplt_name != null ? var.instance_tmplt_name : (var.prefix != null ? "${var.prefix}-ins-tmplt-${random_id.template_suffix.hex}" : "ins-tmplt-${random_id.template_suffix.hex}")
   image                            = var.image_id
   profile                          = var.machine_type

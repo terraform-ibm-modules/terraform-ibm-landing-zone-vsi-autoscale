@@ -47,7 +47,7 @@ data "ibm_is_ssh_key" "existing_ssh_key" {
 
 module "slz_vpc" {
   source            = "terraform-ibm-modules/landing-zone-vpc/ibm"
-  version           = "9.1.2"
+  version           = "10.0.6"
   resource_group_id = module.resource_group.resource_group_id
   region            = var.region
   prefix            = var.prefix
@@ -97,7 +97,7 @@ module "auto_scale" {
   placement_group_id                = ibm_is_placement_group.placement_group.id
   machine_type                      = "cx2-2x4"
   user_data                         = null
-  skip_iam_authorization_policy     = true
+  skip_iam_authorization_policy     = false
   existing_kms_instance_guid        = null
   kms_encryption_enabled            = false
   boot_volume_encryption_key        = null
