@@ -58,6 +58,7 @@ resource "time_sleep" "wait_180_seconds" {
 # Use this when autoscale managers control the instance count (Terraform does not manage instance_count)
 resource "ibm_is_instance_group" "instance_group_with_unmanaged_instance_count" {
   count              = var.ignore_instance_count_changes ? 1 : 0
+  depends_on         = [time_sleep.wait_for_authorization_policy]
   name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id
   access_tags        = var.access_tags
@@ -78,6 +79,7 @@ resource "ibm_is_instance_group" "instance_group_with_unmanaged_instance_count" 
 # Use this when you want Terraform to manage the instance count
 resource "ibm_is_instance_group" "instance_group_with_managed_instance_count" {
   count              = var.ignore_instance_count_changes ? 0 : 1
+  depends_on         = [time_sleep.wait_for_authorization_policy]
   name               = var.instance_group_name != null ? var.instance_group_name : (var.prefix != null ? "${var.prefix}-ins-group" : "ins-group")
   resource_group     = var.resource_group_id
   access_tags        = var.access_tags
