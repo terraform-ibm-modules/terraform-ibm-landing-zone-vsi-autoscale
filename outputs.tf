@@ -17,6 +17,11 @@ output "lbs_list" {
   value       = values(ibm_is_lb.lb)
 }
 
+output "lb_mtls_supported" {
+  description = "Map of load balancer name to whether mTLS is supported, as reported by the IBM Cloud API"
+  value       = { for k, lb in ibm_is_lb.lb : k => lb.mtls_supported }
+}
+
 output "security_groups" {
   description = "Security group information"
   value       = module.security_groups
