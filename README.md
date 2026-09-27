@@ -207,7 +207,6 @@ statement instead the previous block.
 |------|-------------|
 | <a name="output_ibm_is_instance_group"></a> [ibm\_is\_instance\_group](#output\_ibm\_is\_instance\_group) | Instance group information |
 | <a name="output_intstance_template"></a> [intstance\_template](#output\_intstance\_template) | Instance template information |
-| <a name="output_lb_mtls_supported"></a> [lb\_mtls\_supported](#output\_lb\_mtls\_supported) | Map of load balancer name to whether mTLS is supported, as reported by the IBM Cloud API |
 | <a name="output_lbs_list"></a> [lbs\_list](#output\_lbs\_list) | Load balancer information |
 | <a name="output_security_groups"></a> [security\_groups](#output\_security\_groups) | Security group information |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

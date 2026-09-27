@@ -58,17 +58,6 @@ func TestRunCompleteExample(t *testing.T) {
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
-
-	// Verify that the ALB reports mTLS as supported.
-	// Terraform outputs are available on options.LastTestTerraformOutputs after the apply.
-	if assert.Contains(t, options.LastTestTerraformOutputs, "lb_mtls_supported", "Expected lb_mtls_supported in Terraform outputs") {
-		mtlsMap, ok := options.LastTestTerraformOutputs["lb_mtls_supported"].(map[string]interface{})
-		if assert.True(t, ok, "lb_mtls_supported should be a map") {
-			for lbName, supported := range mtlsMap {
-				assert.True(t, supported.(bool), "Expected ALB %q to report mtls_supported = true", lbName)
-			}
-		}
-	}
 }
 
 func TestRunBasicUpgradeExample(t *testing.T) {

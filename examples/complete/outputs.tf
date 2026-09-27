@@ -21,8 +21,3 @@ output "resource_tags" {
   description = "List of resource tags"
   value       = var.resource_tags
 }
-
-output "lb_mtls_supported" {
-  description = "Map of load balancer name to whether mTLS is supported, as reported by the IBM Cloud API"
-  value       = module.auto_scale.lb_mtls_supported
-}
