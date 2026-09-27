@@ -25,6 +25,23 @@ module "resource_group" {
 }
 
 ##############################################################################
+# Server Certificate (from existing Secrets Manager instance)
+# Used to exercise HTTPS listener TLS termination + mTLS pool auth
+##############################################################################
+
+module "server_cert" {
+  count                  = var.existing_sm_instance_guid != null ? 1 : 0
+  source                 = "terraform-ibm-modules/secrets-manager-private-cert/ibm"
+  version                = "1.12.10"
+  cert_name              = "${var.prefix}-server-cert"
+  cert_description       = "Server certificate for LB listener TLS and pool client auth"
+  cert_common_name       = "${var.prefix}-server.example.com"
+  cert_template          = var.existing_sm_cert_template
+  secrets_manager_guid   = var.existing_sm_instance_guid
+  secrets_manager_region = var.existing_sm_instance_region
+}
+
+##############################################################################
 # Create new SSH key
 ##############################################################################
 
@@ -117,16 +134,24 @@ module "auto_scale" {
   load_balancers = [{
     name              = "srv-lb",
     type              = "public",
-    listener_port     = 80,
-    listener_protocol = "http",
-    connection_limit  = 10,
-    protocol          = "http",
-    pool_member_port  = 80,
-    algorithm         = "round_robin",
-    health_delay      = 60,
-    health_retries    = 5,
-    health_timeout    = 30,
-    health_type       = "tcp",
+    listener_port     = var.existing_sm_instance_guid != null ? 443 : 80,
+    listener_protocol = var.existing_sm_instance_guid != null ? "https" : "http",
+    # TLS termination certificate — required when listener_protocol is "https"
+    certificate_instance = var.existing_sm_instance_guid != null ? module.server_cert[0].secret_crn : null,
+    connection_limit     = 10,
+    protocol             = var.existing_sm_instance_guid != null ? "https" : "http",
+    pool_member_port     = var.existing_sm_instance_guid != null ? 443 : 80,
+    algorithm            = "round_robin",
+    health_delay         = 60,
+    health_retries       = 5,
+    health_timeout       = 30,
+    health_type          = var.existing_sm_instance_guid != null ? "https" : "tcp",
+    # mTLS: forward connection metadata (including TLS info) to backends
+    proxy_protocol = var.existing_sm_instance_guid != null ? "v2" : null,
+    # mTLS: pool client presents this certificate when connecting to backends
+    pool_client_authentication = var.existing_sm_instance_guid != null ? {
+      certificate_instance = module.server_cert[0].secret_crn
+    } : null,
     security_group = {
       name                         = "lb-sg",
       add_ibm_cloud_internal_rules = false,
