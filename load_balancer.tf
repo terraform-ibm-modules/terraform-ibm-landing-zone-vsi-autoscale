@@ -4,6 +4,14 @@ locals {
     (load_balancer.name) => load_balancer
   }
 
+  # Derived from the IBM Cloud API after the LB is created.
+  # ALBs (no profile / profile != "network-fixed") → true; NLBs → false.
+  # Pool and listener resources are downstream, so this value is always
+  # known by the time Terraform evaluates their arguments.
+  lb_mtls_supported = {
+    for k, lb in ibm_is_lb.lb : k => lb.mtls_supported
+  }
+
   lb_listener_policy_list = flatten([
     for lb in var.load_balancers : [
       for policy in(lb.policies != null ? lb.policies : []) : [
@@ -70,6 +78,22 @@ resource "ibm_is_lb_pool" "pool" {
   health_retries = each.value.health_retries
   health_timeout = each.value.health_timeout
   health_type    = each.value.health_type
+  proxy_protocol = local.lb_mtls_supported[each.value.name] ? each.value.proxy_protocol : null
+
+  dynamic "client_authentication" {
+    for_each = local.lb_mtls_supported[each.value.name] && each.value.pool_client_authentication != null ? [each.value.pool_client_authentication] : []
+    content {
+      certificate_instance = client_authentication.value["certificate_instance"]
+    }
+  }
+
+  dynamic "server_authentication" {
+    for_each = local.lb_mtls_supported[each.value.name] && each.value.pool_server_authentication != null ? [each.value.pool_server_authentication] : []
+    content {
+      certificate_authority = lookup(server_authentication.value, "certificate_authority", null)
+      verify_certificate    = lookup(server_authentication.value, "verify_certificate", null)
+    }
+  }
 }
 
 ##############################################################################
@@ -87,6 +111,14 @@ resource "ibm_is_lb_listener" "listener" {
   certificate_instance    = each.value.certificate_instance
   connection_limit        = each.value.connection_limit > 0 ? each.value.connection_limit : null
   idle_connection_timeout = each.value.idle_connection_timeout
+
+  dynamic "client_authentication" {
+    for_each = local.lb_mtls_supported[each.value.name] && each.value.listener_client_authentication != null ? [each.value.listener_client_authentication] : []
+    content {
+      certificate_authority       = client_authentication.value["certificate_authority"]
+      certificate_revocation_list = lookup(client_authentication.value, "certificate_revocation_list", null)
+    }
+  }
 }
 
 ##############################################################################

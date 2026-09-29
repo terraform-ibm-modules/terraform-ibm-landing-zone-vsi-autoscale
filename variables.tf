@@ -33,7 +33,7 @@ variable "access_tags" {
     condition = alltrue([
       for tag in var.access_tags : can(regex("[\\w\\-_\\.]+:[\\w\\-_\\.]+", tag)) && length(tag) <= 128
     ])
-    error_message = "Tags must match the regular expression \"[\\w\\-_\\.]+:[\\w\\-_\\.]+\". For more information, see https://cloud.ibm.com/docs/account?topic=account-tag&interface=ui#limits."
+    error_message = "Tags must match the regular expression \"[\\w\\-_\\.]+:[\\w\\-_\\.]+\". For more information, see https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial."
   }
 }
 
@@ -274,17 +274,29 @@ variable "load_balancers" {
       logging                 = optional(bool)
       listener_port           = number
       listener_protocol       = string
+      certificate_instance    = optional(string) # CRN of a certificate instance for HTTPS listener TLS termination
       connection_limit        = number
       idle_connection_timeout = optional(number)
       algorithm               = string
-      certificate_instance    = optional(string)
-      protocol                = string
-      health_delay            = number
-      health_retries          = number
-      health_timeout          = number
-      health_type             = string
-      pool_member_port        = string
-      profile                 = optional(string)
+      proxy_protocol          = optional(string) # Proxy protocol for the pool. Supported values: disabled, v1, v2. Only applicable for ALBs when mTLS is supported.
+      listener_client_authentication = optional(object({
+        certificate_authority       = string           # CRN of the certificate authority used to verify client certificates
+        certificate_revocation_list = optional(string) # CRN of the certificate revocation list (CRL) for client certificate verification
+      }))
+      pool_client_authentication = optional(object({
+        certificate_instance = string # CRN of a certificate instance for pool client authentication
+      }))
+      pool_server_authentication = optional(object({
+        certificate_authority = optional(string) # CRN of the certificate authority used to verify server certificates
+        verify_certificate    = optional(bool)   # Whether to verify the server certificate
+      }))
+      protocol         = string
+      health_delay     = number
+      health_retries   = number
+      health_timeout   = number
+      health_type      = string
+      pool_member_port = string
+      profile          = optional(string)
       dns = optional(
         object({
           instance_crn = string
@@ -419,6 +431,45 @@ variable "load_balancers" {
   validation {
     error_message = "Each load balancer must have a unique name."
     condition     = length(distinct(var.load_balancers[*].name)) == length(var.load_balancers[*].name)
+  }
+
+  validation {
+    error_message = "Load Balancer Pool proxy_protocol can only be `disabled`, `v1`, or `v2`."
+    condition = length(
+      flatten([
+        for load_balancer in var.load_balancers :
+        true if(load_balancer.proxy_protocol != null && !contains(["disabled", "v1", "v2"], load_balancer.proxy_protocol))
+      ])
+    ) == 0
+  }
+
+  validation {
+    error_message = "mTLS parameters (proxy_protocol, listener_client_authentication, pool_client_authentication, pool_server_authentication) cannot be used with a Network Load Balancer (profile = 'network-fixed')."
+    condition = alltrue([
+      for load_balancer in var.load_balancers :
+      load_balancer.profile != "network-fixed" || (
+        load_balancer.proxy_protocol == null &&
+        load_balancer.listener_client_authentication == null &&
+        load_balancer.pool_client_authentication == null &&
+        load_balancer.pool_server_authentication == null
+      )
+    ])
+  }
+
+  validation {
+    error_message = "pool_client_authentication and pool_server_authentication require pool protocol to be 'https'."
+    condition = alltrue([
+      for load_balancer in var.load_balancers :
+      (load_balancer.pool_client_authentication == null && load_balancer.pool_server_authentication == null) || load_balancer.protocol == "https"
+    ])
+  }
+
+  validation {
+    error_message = "listener_client_authentication requires listener_protocol to be 'https'."
+    condition = alltrue([
+      for load_balancer in var.load_balancers :
+      load_balancer.listener_client_authentication == null || load_balancer.listener_protocol == "https"
+    ])
   }
 }
 

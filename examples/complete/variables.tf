@@ -39,3 +39,21 @@ variable "ssh_key" {
   description = "An existing ssh key name to use for this example, if unset a new ssh key will be created"
   default     = null
 }
+
+variable "existing_sm_instance_guid" {
+  type        = string
+  description = "GUID of an existing Secrets Manager instance that has a private certificate engine configured. When set, the complete example will provision an HTTPS load balancer with mTLS pool authentication."
+  default     = null
+}
+
+variable "existing_sm_instance_region" {
+  type        = string
+  description = "Region of the existing Secrets Manager instance."
+  default     = null
+}
+
+variable "existing_sm_cert_template" {
+  type        = string
+  description = "Name of the private certificate template to use when issuing the server certificate from the Secrets Manager instance."
+  default     = null
+}

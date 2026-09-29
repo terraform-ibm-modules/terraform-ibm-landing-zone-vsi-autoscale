@@ -2,9 +2,12 @@
 package test
 
 import (
+	"log"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 )
 
@@ -12,6 +15,19 @@ import (
 const resourceGroup = "geretain-test-resources"
 const completeExampleDir = "examples/complete"
 const basicExampleDir = "examples/basic"
+const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
+
+var permanentResources map[string]interface{}
+
+// TestMain runs before any parallel tests, loading shared permanent resources from YAML.
+func TestMain(m *testing.M) {
+	var err error
+	permanentResources, err = common.LoadMapFromYaml(yamlLocation)
+	if err != nil {
+		log.Fatal(err)
+	}
+	os.Exit(m.Run())
+}
 
 func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
@@ -26,7 +42,18 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 func TestRunCompleteExample(t *testing.T) {
 	t.Parallel()
 
-	options := setupOptions(t, "vsi-auto-c", completeExampleDir)
+	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
+		Testing:       t,
+		TerraformDir:  completeExampleDir,
+		Prefix:        "vsi-auto-c",
+		ResourceGroup: resourceGroup,
+		TerraformVars: map[string]interface{}{
+			"access_tags":                 permanentResources["accessTags"],
+			"existing_sm_instance_guid":   permanentResources["secretsManagerGuid"],
+			"existing_sm_instance_region": permanentResources["secretsManagerRegion"],
+			"existing_sm_cert_template":   permanentResources["privateCertTemplateName"],
+		},
+	})
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
