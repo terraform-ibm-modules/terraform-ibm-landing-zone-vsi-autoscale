@@ -60,6 +60,10 @@ resource "ibm_iam_authorization_policy" "instance_group_trusted_profile_policy" 
     name  = "resourceGroupId"
     value = var.resource_group_id
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Generates unique template name suffix to enable create_before_destroy lifecycle.
