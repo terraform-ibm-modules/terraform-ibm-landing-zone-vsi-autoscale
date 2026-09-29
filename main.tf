@@ -7,6 +7,8 @@ locals {
   ) : null
 }
 
+data "ibm_iam_account_settings" "account" {}
+
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
 resource "time_sleep" "wait_for_authorization_policy" {
   depends_on = [
@@ -50,6 +52,11 @@ resource "ibm_iam_authorization_policy" "instance_group_trusted_profile_policy" 
   target_service_name = "iam-identity"
   roles               = ["Editor"]
   description         = "Allow VPC infrastructure to link trusted profiles to instances."
+
+  subject_attributes {
+    name  = "accountId"
+    value = data.ibm_iam_account_settings.account.account_id
+  }
 
   subject_attributes {
     name  = "serviceName"
