@@ -1,9 +1,7 @@
 locals {
-  # Determine what KMS service is being used for database encryption
+  # Determine what KMS service is being used for encryption
   kms_service = var.boot_volume_encryption_key != null ? (
-    can(regex(".*kms.*", var.boot_volume_encryption_key)) ? "kms" : (
-      can(regex(".*hs-crypto.*", var.boot_volume_encryption_key)) ? "hs-crypto" : null
-    )
+    can(regex(".*kms.*", var.boot_volume_encryption_key)) ? "kms" : null
   ) : null
 }
 
@@ -16,7 +14,7 @@ resource "time_sleep" "wait_for_authorization_policy" {
     ibm_iam_authorization_policy.instance_group_trusted_profile_policy
   ]
 
-  create_duration = "30s"
+  create_duration = "90s"
 }
 
 ##############################################################################

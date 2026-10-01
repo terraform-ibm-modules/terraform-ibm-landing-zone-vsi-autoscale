@@ -124,7 +124,7 @@ module "auto_scale" {
   placement_group_id            = ibm_is_placement_group.placement_group.id
   machine_type                  = "cx2-2x4"
   user_data                     = null
-  skip_iam_authorization_policy = false
+  skip_iam_authorization_policy = true
   existing_kms_instance_guid    = null
   kms_encryption_enabled        = false
   boot_volume_encryption_key    = null
