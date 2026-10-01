@@ -14,7 +14,7 @@ resource "time_sleep" "wait_for_authorization_policy" {
     ibm_iam_authorization_policy.instance_group_trusted_profile_policy
   ]
 
-  create_duration = "30s"
+  create_duration = "90s"
 }
 
 ##############################################################################
