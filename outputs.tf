@@ -2,7 +2,7 @@
 # Outputs
 ########################################################################################################################
 
-output "intstance_template" {
+output "instance_template" {
   description = "Instance template information"
   value       = ibm_is_instance_template.instance_template
 }

@@ -208,7 +208,7 @@ statement instead the previous block.
 | Name | Description |
 |------|-------------|
 | <a name="output_ibm_is_instance_group"></a> [ibm\_is\_instance\_group](#output\_ibm\_is\_instance\_group) | Instance group information |
-| <a name="output_intstance_template"></a> [intstance\_template](#output\_intstance\_template) | Instance template information |
+| <a name="output_instance_template"></a> [instance\_template](#output\_instance\_template) | Instance template information |
 | <a name="output_lbs_list"></a> [lbs\_list](#output\_lbs\_list) | Load balancer information |
 | <a name="output_security_groups"></a> [security\_groups](#output\_security\_groups) | Security group information |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
