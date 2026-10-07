@@ -185,6 +185,16 @@ module "auto_scale" {
         metric_value = 70
         policy_type  = "target"
       }]
+    },
+    {
+      name           = "scheduled-mgr"
+      manager_type   = "scheduled"
+      enable_manager = true
+      actions = [{
+        name             = "scale-up-morning"
+        cron_spec        = "0 8 * * 1-5"
+        membership_count = 3
+      }]
     }
   ]
 }
