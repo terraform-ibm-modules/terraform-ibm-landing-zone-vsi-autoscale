@@ -22,9 +22,9 @@ output "resource_tags" {
   value       = var.resource_tags
 }
 
-output "intstance_template" {
+output "instance_template" {
   description = "Instance template information"
-  value       = module.auto_scale.intstance_template
+  value       = module.auto_scale.instance_template
 }
 
 output "ibm_is_instance_group" {
