@@ -211,7 +211,7 @@ statement instead the previous block.
 | <a name="output_instance_group_manager_actions"></a> [instance\_group\_manager\_actions](#output\_instance\_group\_manager\_actions) | Map of instance group manager action IDs keyed by action name. |
 | <a name="output_instance_group_manager_policies"></a> [instance\_group\_manager\_policies](#output\_instance\_group\_manager\_policies) | Map of instance group manager policy IDs keyed by policy name. |
 | <a name="output_instance_group_managers"></a> [instance\_group\_managers](#output\_instance\_group\_managers) | Map of instance group manager IDs keyed by manager name. |
-| <a name="output_instance_template"></a> [instance\_template](#output\_instance\_template) | Instance template information |
+| <a name="output_intstance_template"></a> [intstance\_template](#output\_intstance\_template) | Instance template information |
 | <a name="output_lbs_list"></a> [lbs\_list](#output\_lbs\_list) | Load balancer information |
 | <a name="output_security_groups"></a> [security\_groups](#output\_security\_groups) | Security group information |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
