@@ -31,10 +31,9 @@ func TestMain(m *testing.M) {
 
 func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
-		Testing:       t,
-		TerraformDir:  dir,
-		Prefix:        prefix,
-		ResourceGroup: resourceGroup,
+		Testing:      t,
+		TerraformDir: dir,
+		Prefix:       prefix,
 	})
 	return options
 }
