@@ -31,9 +31,10 @@ func TestMain(m *testing.M) {
 
 func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
-		Testing:      t,
-		TerraformDir: dir,
-		Prefix:       prefix,
+		Testing:       t,
+		TerraformDir:  dir,
+		Prefix:        prefix,
+		ResourceGroup: resourceGroup,
 	})
 	return options
 }
@@ -60,7 +61,7 @@ func TestRunCompleteExample(t *testing.T) {
 }
 
 func TestRunBasicUpgradeExample(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 
 	options := setupOptions(t, "vsi-auto-upg", basicExampleDir)
 
