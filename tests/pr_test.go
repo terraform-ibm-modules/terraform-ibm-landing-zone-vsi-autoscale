@@ -35,6 +35,14 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 		TerraformDir:  dir,
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
+		// skip_iam_authorization_policy is set to true for tests using this helper to
+		// avoid a 409 conflict. The IAM authorization policy is account-wide (no
+		// resource-group scoping), so concurrent or sequential applies in the same
+		// account would try to create an identical policy and IBM IAM rejects the
+		// second with a 409. TestRunCompleteExample covers this policy independently.
+		TerraformVars: map[string]interface{}{
+			"skip_iam_authorization_policy": true,
+		},
 	})
 	return options
 }
@@ -54,6 +62,16 @@ func TestRunCompleteExample(t *testing.T) {
 			"existing_sm_cert_template":   permanentResources["privateCertTemplateName"],
 		},
 	})
+
+	output, err := options.RunTestConsistency()
+	assert.Nil(t, err, "This should not have errored")
+	assert.NotNil(t, output, "Expected some output")
+}
+
+func TestRunBasicExample(t *testing.T) {
+	t.Parallel()
+
+	options := setupOptions(t, "vsi-auto-b", basicExampleDir)
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
