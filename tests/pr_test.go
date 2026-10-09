@@ -79,7 +79,7 @@ func TestRunBasicExample(t *testing.T) {
 }
 
 func TestRunBasicUpgradeExample(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 
 	options := setupOptions(t, "vsi-auto-upg", basicExampleDir)
 
