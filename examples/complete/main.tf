@@ -32,7 +32,7 @@ module "resource_group" {
 module "server_cert" {
   count                  = var.existing_sm_instance_guid != null ? 1 : 0
   source                 = "terraform-ibm-modules/secrets-manager-private-cert/ibm"
-  version                = "1.12.10"
+  version                = "1.12.12"
   cert_name              = "${var.prefix}-server-cert"
   cert_description       = "Server certificate for LB listener TLS and pool client auth"
   cert_common_name       = "${var.prefix}-server.example.com"
@@ -68,7 +68,7 @@ data "ibm_is_ssh_key" "existing_ssh_key" {
 
 module "slz_vpc" {
   source            = "terraform-ibm-modules/landing-zone-vpc/ibm"
-  version           = "9.1.2"
+  version           = "10.1.0"
   resource_group_id = module.resource_group.resource_group_id
   region            = var.region
   prefix            = var.prefix
