@@ -39,3 +39,9 @@ variable "ssh_key" {
   description = "An existing ssh key name to use for this example, if unset a new ssh key will be created"
   default     = null
 }
+
+variable "skip_iam_authorization_policy" {
+  type        = bool
+  description = "Set to true to skip the creation of IAM authorization policies. If set to false, pass in a value for the KMS instance in the existing_kms_instance_guid variable if KMS encryption is enabled. In addition, no KMS policy is created if var.kms_encryption_enabled is set to false."
+  default     = false
+}
