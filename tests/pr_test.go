@@ -40,7 +40,6 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 }
 
 func TestRunCompleteExample(t *testing.T) {
-	t.Parallel()
 
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
 		Testing:       t,
@@ -60,8 +59,16 @@ func TestRunCompleteExample(t *testing.T) {
 	assert.NotNil(t, output, "Expected some output")
 }
 
+func TestRunBasicExample(t *testing.T) {
+
+	options := setupOptions(t, "vsi-auto-b", basicExampleDir)
+
+	output, err := options.RunTestConsistency()
+	assert.Nil(t, err, "This should not have errored")
+	assert.NotNil(t, output, "Expected some output")
+}
+
 func TestRunBasicUpgradeExample(t *testing.T) {
-	t.Parallel()
 
 	options := setupOptions(t, "vsi-auto-upg", basicExampleDir)
 
