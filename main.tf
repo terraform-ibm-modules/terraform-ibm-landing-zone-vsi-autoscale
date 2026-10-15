@@ -1,8 +1,18 @@
 locals {
-  # Determine what KMS service is being used for encryption
+  # Determine what KMS service is being used for database encryption
   kms_service = var.boot_volume_encryption_key != null ? (
-    can(regex(".*kms.*", var.boot_volume_encryption_key)) ? "kms" : null
+    can(regex(".*kms.*", var.boot_volume_encryption_key)) ? "kms" : (
+      can(regex(".*hs-crypto.*", var.boot_volume_encryption_key)) ? "hs-crypto" : null
+    )
   ) : null
+}
+
+
+check "warn_hpcs_deprecation" {
+  assert {
+    condition     = !(var.boot_volume_encryption_key != null && can(regex(".*hs-crypto.*", var.boot_volume_encryption_key)))
+    error_message = "WARNING (Non-fatal, execution will continue): An IBM Cloud Hyper Protect Crypto Services (hs-crypto) instance or key CRN was provided. Note that IBM Cloud Hyper Protect Crypto Services is deprecated. Consider migrating to a supported alternative."
+  }
 }
 
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
@@ -12,7 +22,7 @@ resource "time_sleep" "wait_for_authorization_policy" {
     ibm_iam_authorization_policy.instance_group_trusted_profile_policy
   ]
 
-  create_duration = "90s"
+  create_duration = "30s"
 }
 
 ##############################################################################
