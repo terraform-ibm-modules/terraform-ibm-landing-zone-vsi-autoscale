@@ -7,7 +7,7 @@ locals {
 
   ins_group_mgr_map = {
     for mgr in var.group_managers :
-    (mgr.name) => mgr
+    (mgr.manager_type) => mgr
   }
 
   inst_group_mgr_action_list = flatten([
@@ -15,7 +15,7 @@ locals {
     [
       for action in flatten([mgr.actions != null ? mgr.actions : []]) : #Check if actions are null
       merge({
-        mgr_name = mgr.name
+        mgr_type = mgr.manager_type
       }, action)
     ]
   ])
@@ -30,7 +30,7 @@ locals {
     [
       for policy in flatten([mgr.policies != null ? mgr.policies : []]) : #Check if actions are null
       merge({
-        mgr_name = mgr.name
+        mgr_type = mgr.manager_type
       }, policy)
     ]
   ])
@@ -47,6 +47,11 @@ locals {
 moved {
   from = ibm_is_instance_group.instance_group
   to   = ibm_is_instance_group.instance_group_with_unmanaged_instance_count[0]
+}
+
+moved {
+  from = ibm_is_instance_group_manager.instance_group_manager["test"]
+  to   = ibm_is_instance_group_manager.instance_group_manager["autoscale"]
 }
 
 resource "time_sleep" "wait_180_seconds" {
@@ -122,13 +127,13 @@ resource "ibm_is_instance_group_manager_action" "instance_group_manager_actions"
 
   name                   = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   instance_group         = local.instance_group_id
-  instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_name].manager_id
+  instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_type].manager_id
   cron_spec              = each.value.cron_spec
   membership_count       = each.value.membership_count
   min_membership_count   = each.value.min_membership_count
   max_membership_count   = each.value.max_membership_count
   run_at                 = each.value.run_at
-  target_manager         = each.value.min_membership_count != null && each.value.max_membership_count != null ? ibm_is_instance_group_manager.instance_group_manager[each.value.manager_name].manager_id : null
+  target_manager         = each.value.min_membership_count != null && each.value.max_membership_count != null ? ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_type].manager_id : null
 }
 
 ##############################################################################
@@ -140,7 +145,7 @@ resource "ibm_is_instance_group_manager_policy" "instance_group_manager_policies
   for_each = local.inst_group_mgr_policy_map
 
   instance_group         = local.instance_group_id
-  instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_name].manager_id
+  instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_type].manager_id
   name                   = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   metric_type            = each.value.metric_type
   metric_value           = each.value.metric_value
