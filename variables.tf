@@ -126,7 +126,7 @@ variable "auto_delete_volumes" {
 }
 
 variable "existing_kms_instance_guid" {
-  description = "The GUID of the Hyper Protect Crypto Services instance in which the key specified in var.boot_volume_encryption_key is coming from."
+  description = "The GUID of the Key Protect instance in which the key specified in var.boot_volume_encryption_key is coming from."
   type        = string
   default     = null
 

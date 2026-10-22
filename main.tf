@@ -7,6 +7,17 @@ locals {
   ) : null
 }
 
+
+check "warn_hpcs_deprecation" {
+  assert {
+    condition = !(
+      (var.boot_volume_encryption_key != null && can(regex(".*hs-crypto.*", var.boot_volume_encryption_key))) ||
+      anytrue([for vol in var.block_storage_volumes : vol.encryption_key != null && can(regex(".*hs-crypto.*", vol.encryption_key))])
+    )
+    error_message = "WARNING (Non-fatal, execution will continue): An IBM Cloud Hyper Protect Crypto Services (hs-crypto) instance or key CRN was provided. Note that IBM Cloud Hyper Protect Crypto Services is deprecated. Consider migrating to a supported alternative."
+  }
+}
+
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
 resource "time_sleep" "wait_for_authorization_policy" {
   depends_on = [
