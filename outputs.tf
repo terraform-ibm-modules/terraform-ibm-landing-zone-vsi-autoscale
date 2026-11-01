@@ -26,7 +26,7 @@ output "security_groups" {
 output "instance_group_managers" {
   description = "Map of instance group manager IDs keyed by manager name."
   value = {
-    for k, v in ibm_is_instance_group_manager.instance_group_manager : k => {
+    for k, v in local.instance_group_managers : k => {
       manager_id           = v.manager_id
       manager_type         = v.manager_type
       aggregation_window   = v.aggregation_window

@@ -10,6 +10,16 @@ locals {
     (mgr.manager_type) => mgr
   }
 
+  # IBM Cloud allows only one change at a time on an instance group, so scheduled managers
+  # are a separate resource that depends on the autoscale managers (see below).
+  ins_group_autoscale_mgr_map = { for k, mgr in local.ins_group_mgr_map : k => mgr if mgr.manager_type != "scheduled" }
+  ins_group_scheduled_mgr_map = { for k, mgr in local.ins_group_mgr_map : k => mgr if mgr.manager_type == "scheduled" }
+
+  instance_group_managers = merge(
+    ibm_is_instance_group_manager.instance_group_manager,
+    ibm_is_instance_group_manager.instance_group_manager_scheduled
+  )
+
   inst_group_mgr_action_list = flatten([
     for mgr in var.group_managers :
     [
@@ -98,7 +108,7 @@ resource "ibm_is_instance_group" "instance_group_with_managed_instance_count" {
 # Create Instance Group Manager
 ##############################################################################
 resource "ibm_is_instance_group_manager" "instance_group_manager" {
-  for_each = local.ins_group_mgr_map
+  for_each = local.ins_group_autoscale_mgr_map
 
   name                 = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   aggregation_window   = each.value.aggregation_window
@@ -112,6 +122,24 @@ resource "ibm_is_instance_group_manager" "instance_group_manager" {
   depends_on = [time_sleep.wait_180_seconds]
 }
 
+# Scheduled managers depend on the autoscale managers so that Terraform creates, updates and
+# destroys them one after the other. IBM Cloud rejects concurrent changes to an instance group
+# with "manager type already exists" or "Instance Group updating. Try again."
+resource "ibm_is_instance_group_manager" "instance_group_manager_scheduled" {
+  for_each = local.ins_group_scheduled_mgr_map
+
+  name                 = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
+  aggregation_window   = each.value.aggregation_window
+  instance_group       = local.instance_group_id
+  cooldown             = each.value.cooldown
+  manager_type         = each.value.manager_type
+  enable_manager       = each.value.enable_manager
+  max_membership_count = each.value.max_membership_count
+  min_membership_count = each.value.min_membership_count
+
+  depends_on = [time_sleep.wait_180_seconds, ibm_is_instance_group_manager.instance_group_manager]
+}
+
 ##############################################################################
 # Create Instance Group Manager Action
 #
@@ -122,13 +150,13 @@ resource "ibm_is_instance_group_manager_action" "instance_group_manager_actions"
 
   name                   = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   instance_group         = local.instance_group_id
-  instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_type].manager_id
+  instance_group_manager = local.instance_group_managers[each.value.mgr_type].manager_id
   cron_spec              = each.value.cron_spec
   membership_count       = each.value.membership_count
   min_membership_count   = each.value.min_membership_count
   max_membership_count   = each.value.max_membership_count
   run_at                 = each.value.run_at
-  target_manager         = each.value.min_membership_count != null && each.value.max_membership_count != null ? ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_type].manager_id : null
+  target_manager         = each.value.min_membership_count != null && each.value.max_membership_count != null ? local.instance_group_managers[each.value.mgr_type].manager_id : null
 }
 
 ##############################################################################
@@ -140,7 +168,7 @@ resource "ibm_is_instance_group_manager_policy" "instance_group_manager_policies
   for_each = local.inst_group_mgr_policy_map
 
   instance_group         = local.instance_group_id
-  instance_group_manager = ibm_is_instance_group_manager.instance_group_manager[each.value.mgr_type].manager_id
+  instance_group_manager = local.instance_group_managers[each.value.mgr_type].manager_id
   name                   = var.prefix != null ? "${var.prefix}-${each.value.name}" : each.value.name
   metric_type            = each.value.metric_type
   metric_value           = each.value.metric_value
