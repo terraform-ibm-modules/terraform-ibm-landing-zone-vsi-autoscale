@@ -150,6 +150,7 @@ statement instead the previous block.
 | [ibm_is_instance_group.instance_group_with_managed_instance_count](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group) | resource |
 | [ibm_is_instance_group.instance_group_with_unmanaged_instance_count](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group) | resource |
 | [ibm_is_instance_group_manager.instance_group_manager](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group_manager) | resource |
+| [ibm_is_instance_group_manager.instance_group_manager_scheduled](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group_manager) | resource |
 | [ibm_is_instance_group_manager_action.instance_group_manager_actions](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group_manager_action) | resource |
 | [ibm_is_instance_group_manager_policy.instance_group_manager_policies](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_group_manager_policy) | resource |
 | [ibm_is_instance_template.instance_template](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/is_instance_template) | resource |
